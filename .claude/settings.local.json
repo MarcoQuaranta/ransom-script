@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm install:*)",
       "WebFetch(domain:aurummilano.it)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

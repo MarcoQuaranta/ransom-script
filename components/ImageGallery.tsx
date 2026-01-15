@@ -9,6 +9,7 @@ interface ImageGalleryProps {
   shopId: string;
   productId?: string;
   maxImages?: number;
+  onImageDelete?: (imageUrl: string) => void; // Callback to track deleted images for multi-shop edit
 }
 
 export default function ImageGallery({
@@ -17,6 +18,7 @@ export default function ImageGallery({
   shopId,
   productId,
   maxImages = 50,
+  onImageDelete,
 }: ImageGalleryProps) {
   const [urlInput, setUrlInput] = useState('');
   const [isDragging, setIsDragging] = useState(false);
@@ -167,6 +169,11 @@ export default function ImageGallery({
 
   const removeImage = async (index: number) => {
     const image = images[index];
+
+    // Track image URL for multi-shop deletion
+    if (image.url && onImageDelete) {
+      onImageDelete(image.url);
+    }
 
     // If image has an ID and productId, delete from Shopify
     if (image.id && productId) {

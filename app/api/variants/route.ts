@@ -7,6 +7,9 @@ import {
   PRODUCT_VARIANT_DELETE_MUTATION,
   PRODUCT_VARIANTS_QUERY,
   PRODUCT_OPTIONS_CREATE_MUTATION,
+  PRODUCT_OPTION_DELETE_MUTATION,
+  PRODUCT_OPTION_UPDATE_MUTATION,
+  PRODUCT_VARIANTS_BULK_DELETE_MUTATION,
   INVENTORY_ITEM_UPDATE_MUTATION,
 } from '@/lib/shopify';
 import { VariantCombination, VariantOption } from '@/types/shopify';
@@ -124,44 +127,174 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Step 1: Create product options first (required before variants)
-    // This will also create variants automatically for all combinations
+    // Step 1: Check existing product options and handle mismatches
+    // We need to properly sync options before creating variants
     if (options && options.length > 0) {
-      const optionInputs = (options as VariantOption[]).map((opt, index) => ({
-        name: opt.name,
-        position: index + 1,
-        values: opt.values.map(v => ({ name: v })),
-      }));
+      // First, fetch the product's current state
+      const currentProductResponse: any = await shopifyGraphqlWithRefresh(
+        shop.shop,
+        PRODUCT_VARIANTS_QUERY,
+        { id: productId }
+      );
 
-      console.log('[VARIANTS API] Creating options:', JSON.stringify(optionInputs, null, 2));
+      const currentProduct = currentProductResponse.product;
+      const currentOptions = currentProduct?.options || [];
+      const currentVariants = currentProduct?.variants?.edges || [];
 
-      try {
-        const optionsResponse: any = await shopifyGraphqlWithRefresh(
-          shop.shop,
-          PRODUCT_OPTIONS_CREATE_MUTATION,
-          {
-            productId,
-            options: optionInputs,
-          }
-        );
+      console.log('[VARIANTS API] Current options:', JSON.stringify(currentOptions, null, 2));
+      console.log('[VARIANTS API] Current variants count:', currentVariants.length);
 
-        console.log('[VARIANTS API] Options response:', JSON.stringify(optionsResponse, null, 2));
+      // Check if current options match what we want
+      const wantedOptionNames = (options as VariantOption[]).map((o) => o.name);
+      const currentOptionNames = currentOptions.map((o: any) => o.name);
 
-        if (optionsResponse.productOptionsCreate?.userErrors?.length > 0) {
-          const errors = optionsResponse.productOptionsCreate.userErrors;
-          // Ignore "already exists" errors, fail on others
-          const realErrors = errors.filter((e: any) => !e.message?.includes('already exists'));
-          if (realErrors.length > 0) {
-            console.error('[VARIANTS API] Options creation errors:', realErrors);
-            return NextResponse.json(
-              { success: false, error: realErrors[0].message },
-              { status: 400 }
+      // Check if it's just the default "Title" option with "Default Title" value
+      const isDefaultOnly =
+        currentOptions.length === 1 &&
+        currentOptions[0].name === 'Title' &&
+        currentOptions[0].values?.length === 1 &&
+        currentOptions[0].values[0] === 'Default Title';
+
+      // Check if options match what we want to create
+      const optionsMatch =
+        currentOptionNames.length === wantedOptionNames.length &&
+        currentOptionNames.every((name: string, i: number) => name === wantedOptionNames[i]);
+
+      console.log('[VARIANTS API] Is default only:', isDefaultOnly);
+      console.log('[VARIANTS API] Options match:', optionsMatch);
+
+      // If options don't match, we need to reset them
+      if (!optionsMatch) {
+        console.log('[VARIANTS API] Options mismatch - need to reset product options');
+
+        // Step 1a: Delete all existing variants (keep at least one if Shopify requires it)
+        if (currentVariants.length > 0) {
+          // Delete all variants except possibly one (we'll create new ones)
+          const variantIdsToDelete = currentVariants.map((edge: any) => edge.node.id);
+
+          // Shopify requires at least one variant, so we might need to be careful here
+          // Delete in batches if there are many
+          console.log('[VARIANTS API] Deleting', variantIdsToDelete.length, 'existing variants');
+
+          try {
+            const deleteResponse: any = await shopifyGraphqlWithRefresh(
+              shop.shop,
+              PRODUCT_VARIANTS_BULK_DELETE_MUTATION,
+              {
+                productId,
+                variantsIds: variantIdsToDelete,
+              }
             );
+
+            if (deleteResponse.productVariantsBulkDelete?.userErrors?.length > 0) {
+              console.warn('[VARIANTS API] Variant delete warnings:', deleteResponse.productVariantsBulkDelete.userErrors);
+              // Don't fail - continue with what we can do
+            }
+          } catch (delErr: any) {
+            console.warn('[VARIANTS API] Could not delete variants:', delErr.message);
+            // Continue anyway
           }
         }
-      } catch (optErr: any) {
-        console.error('[VARIANTS API] Options creation exception:', optErr);
-        // Continue anyway - options might already exist
+
+        // Step 1b: Delete existing options that don't match
+        for (const existingOption of currentOptions) {
+          // Skip if this option name is in our wanted options
+          if (wantedOptionNames.includes(existingOption.name)) {
+            continue;
+          }
+
+          console.log('[VARIANTS API] Deleting option:', existingOption.name, existingOption.id);
+
+          try {
+            const deleteOptResponse: any = await shopifyGraphqlWithRefresh(
+              shop.shop,
+              PRODUCT_OPTION_DELETE_MUTATION,
+              {
+                productId,
+                optionId: existingOption.id,
+              }
+            );
+
+            if (deleteOptResponse.productOptionDelete?.userErrors?.length > 0) {
+              console.warn('[VARIANTS API] Option delete warnings:', deleteOptResponse.productOptionDelete.userErrors);
+            }
+          } catch (optDelErr: any) {
+            console.warn('[VARIANTS API] Could not delete option:', optDelErr.message);
+          }
+        }
+
+        // Step 1c: Create new options
+        const optionInputs = (options as VariantOption[]).map((opt, index) => ({
+          name: opt.name,
+          position: index + 1,
+          values: opt.values.map((v) => ({ name: v })),
+        }));
+
+        console.log('[VARIANTS API] Creating new options:', JSON.stringify(optionInputs, null, 2));
+
+        try {
+          const optionsResponse: any = await shopifyGraphqlWithRefresh(
+            shop.shop,
+            PRODUCT_OPTIONS_CREATE_MUTATION,
+            {
+              productId,
+              options: optionInputs,
+            }
+          );
+
+          console.log('[VARIANTS API] Options create response:', JSON.stringify(optionsResponse, null, 2));
+
+          if (optionsResponse.productOptionsCreate?.userErrors?.length > 0) {
+            const errors = optionsResponse.productOptionsCreate.userErrors;
+            // Ignore "already exists" errors
+            const realErrors = errors.filter((e: any) => !e.message?.includes('already exists'));
+            if (realErrors.length > 0) {
+              console.error('[VARIANTS API] Options creation errors:', realErrors);
+              return NextResponse.json(
+                { success: false, error: realErrors[0].message },
+                { status: 400 }
+              );
+            }
+          }
+        } catch (optErr: any) {
+          console.error('[VARIANTS API] Options creation exception:', optErr);
+          return NextResponse.json(
+            { success: false, error: `Errore creazione opzioni: ${optErr.message}` },
+            { status: 500 }
+          );
+        }
+      } else {
+        // Options match - we may just need to add missing values
+        console.log('[VARIANTS API] Options match - checking if values need updating');
+
+        // Update each option with any missing values
+        for (let i = 0; i < (options as VariantOption[]).length; i++) {
+          const wantedOption = (options as VariantOption[])[i];
+          const existingOption = currentOptions.find((o: any) => o.name === wantedOption.name);
+
+          if (existingOption) {
+            const existingValues = existingOption.values || [];
+            const missingValues = wantedOption.values.filter((v) => !existingValues.includes(v));
+
+            if (missingValues.length > 0) {
+              console.log(`[VARIANTS API] Adding missing values to ${wantedOption.name}:`, missingValues);
+
+              // Add missing values via option update
+              const allValues = [...existingValues, ...missingValues];
+              try {
+                await shopifyGraphqlWithRefresh(shop.shop, PRODUCT_OPTION_UPDATE_MUTATION, {
+                  productId,
+                  optionId: existingOption.id,
+                  option: {
+                    values: allValues.map((v: string) => ({ name: v })),
+                  },
+                });
+              } catch (updateErr: any) {
+                console.warn('[VARIANTS API] Could not update option values:', updateErr.message);
+              }
+            }
+          }
+        }
       }
     }
 
@@ -198,22 +331,31 @@ export async function POST(request: NextRequest) {
         });
 
         if (existingEdge) {
+          // Format price correctly for Shopify (string with 2 decimals)
+          const priceNum = parseFloat(String(variant.price || '0'));
+          const compareNum = variant.compareAtPrice ? parseFloat(String(variant.compareAtPrice)) : null;
+
           const updateInput: any = {
             id: existingEdge.node.id,
-            price: variant.price,
-            compareAtPrice: variant.compareAtPrice || null,
+            price: isNaN(priceNum) ? '0.00' : priceNum.toFixed(2),
+            compareAtPrice: compareNum && !isNaN(compareNum) ? compareNum.toFixed(2) : null,
           };
           // Include mediaId only if it's a valid Shopify GID
           if (variant.imageId && variant.imageId.startsWith('gid://shopify/')) {
             updateInput.mediaId = variant.imageId;
           }
+          console.log('[VARIANTS API] Update input:', JSON.stringify(updateInput));
           variantsToUpdate.push(updateInput);
         }
       } else {
         // Need to create this variant
+        // Format price correctly for Shopify (string with 2 decimals)
+        const priceNum = parseFloat(String(variant.price || '0'));
+        const compareNum = variant.compareAtPrice ? parseFloat(String(variant.compareAtPrice)) : null;
+
         const createInput: any = {
-          price: variant.price,
-          compareAtPrice: variant.compareAtPrice || null,
+          price: isNaN(priceNum) ? '0.00' : priceNum.toFixed(2),
+          compareAtPrice: compareNum && !isNaN(compareNum) ? compareNum.toFixed(2) : null,
           optionValues: Object.entries(variant.options).map(([name, value]) => ({
             optionName: name,
             name: value,
@@ -223,6 +365,7 @@ export async function POST(request: NextRequest) {
         if (variant.imageId && variant.imageId.startsWith('gid://shopify/')) {
           createInput.mediaId = variant.imageId;
         }
+        console.log('[VARIANTS API] Create input:', JSON.stringify(createInput));
         variantsToCreate.push(createInput);
       }
     }

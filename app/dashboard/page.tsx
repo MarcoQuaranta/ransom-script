@@ -296,7 +296,8 @@ export default function Dashboard() {
                   {editingProduct ? 'Modifica Prodotto' : 'Nuovo Prodotto'}
                 </h2>
                 <ProductForm
-                  shopId={selectedShop}
+                  shops={shops}
+                  selectedShopId={selectedShop}
                   product={editingProduct}
                   onSuccess={() => {
                     setShowForm(false);

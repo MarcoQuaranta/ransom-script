@@ -8,87 +8,67 @@ datasource db {
 }
 
 model Shop {
-  id             String    @id @default(cuid())
-  name           String?
-  shop           String    @unique
+  id             String                     @id @default(cuid())
+  shop           String                     @unique
   accessToken    String
   scope          String?
-
-  // Client credentials for token refresh
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  name           String?
   clientId       String?
   clientSecret   String?
   tokenExpiresAt DateTime?
-
-  // Gemini API key (optional per-shop)
   geminiApiKey   String?
-
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  products       Product[]
   metafieldCache MetafieldDefinitionCache[]
+  products       Product[]
 
   @@index([shop])
 }
 
 model Product {
-  id               String   @id @default(cuid())
-  shopifyProductId String
-  shopId           String
-  shop             Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
-
-  title            String
-  handle           String?
-  price            Float?
-  sku              String?
-  templateSuffix   String   @default("landing")
-
-  // Metafields data stored as JSON
-  metafields       Json?
-
-  // Variants and images tracking
-  variantsCount       Int      @default(1)
-  imagesCount         Int      @default(0)
+  id                  String   @id @default(cuid())
+  shopifyProductId    String
+  shopId              String
+  title               String
+  handle              String?
+  price               Float?
+  sku                 String?
+  templateSuffix      String   @default("landing")
+  metafields          Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
   hasMultipleVariants Boolean  @default(false)
-
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  imagesCount         Int      @default(0)
+  variantsCount       Int      @default(1)
+  shop                Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
   @@index([shopId])
   @@index([shopifyProductId])
 }
 
 model Template {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  slug        String   @unique
-
-  // JSON structure of the template
-  structure   Json
-
-  // Liquid sections data
-  sections    Json?
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  structure Json
+  sections  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([slug])
 }
 
-// Cache metafield definitions from shop
 model MetafieldDefinitionCache {
   id          String   @id @default(cuid())
   shopId      String
-  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
-
   namespace   String
   key         String
   name        String
-  type        String   // single_line_text_field, number_integer, url, json, etc.
+  type        String
   description String?
-  validations Json?    // Store validation rules as JSON
-
+  validations Json?
   cachedAt    DateTime @default(now())
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
   @@unique([shopId, namespace, key])
   @@index([shopId])

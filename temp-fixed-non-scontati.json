@@ -1,0 +1,665 @@
+{
+  "sections": {
+    "main": {
+      "type": "product-information",
+      "blocks": {
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "static": true,
+          "settings": {
+            "media_presentation": "carousel",
+            "media_columns": "two",
+            "image_gap": 4,
+            "large_first_image": false,
+            "icons_style": "arrows_large",
+            "slideshow_controls_style": "thumbnails",
+            "slideshow_mobile_controls_style": "thumbnails",
+            "thumbnail_position": "left",
+            "thumbnail_width": 44,
+            "thumbnail_radius": 0,
+            "aspect_ratio": "1/1.25",
+            "constrain_to_viewport": false,
+            "media_fit": "contain",
+            "media_radius": 0,
+            "extend_media": false,
+            "zoom": true,
+            "video_loop": false,
+            "hide_variants": false,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": {
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "details_position": "flex-start",
+            "gap": 28,
+            "sticky_details_desktop": true,
+            "inherit_color_scheme": true,
+            "color_scheme": "scheme-1",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 24,
+            "padding-block-end": 24,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "custom_liquid_8fEwNT": {
+              "type": "custom-liquid",
+              "name": "t:names.custom_liquid",
+              "settings": {
+                "custom_liquid": "<!-- MORETTI DALLAS Badges - Tema Outsiders/Rebels -->\n<!-- Con Badge Sconto Diagonale Dinamico -->\n<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n\n{% comment %} Calcolo sconto dinamico Shopify {% endcomment %}\n{% assign has_discount = false %}\n{% assign discount_percentage = 0 %}\n\n{% if product.compare_at_price > product.price %}\n  {% assign has_discount = true %}\n  {% assign discount = product.compare_at_price | minus: product.price %}\n  {% assign discount_percentage = discount | times: 100.0 | divided_by: product.compare_at_price | round %}\n{% endif %}\n\n<style>\n  slideshow-container {\n    position: relative !important;\n  }\n\n  .MORETTI DALLAS-badge,\n  .MORETTI DALLAS-viewers {\n    position: absolute;\n    z-index: 999;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n    padding: 10px 16px;\n    border-radius: 8px;\n    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;\n    font-weight: 500;\n    font-size: 13px;\n    line-height: 1;\n    letter-spacing: -0.01em;\n    backdrop-filter: blur(10px);\n    -webkit-backdrop-filter: blur(10px);\n    white-space: nowrap;\n    pointer-events: none;\n    opacity: 0;\n    transform: translateY(8px);\n    transition: opacity 0.4s ease, transform 0.4s ease;\n  }\n  \n  .MORETTI DALLAS-badge.is-visible,\n  .MORETTI DALLAS-viewers.is-visible {\n    opacity: 1;\n    transform: translateY(0);\n  }\n\n  .MORETTI DALLAS-badge {\n    left: 16px;\n    bottom: 16px;\n    background: rgba(249, 115, 22, 0.7);\n    color: #ffffff;\n    box-shadow: 0 2px 12px rgba(249, 115, 22, 0.3);\n  }\n  \n  .MORETTI DALLAS-badge::before {\n    content: '';\n    width: 8px;\n    height: 8px;\n    background: #ffffff;\n    border-radius: 50%;\n    flex-shrink: 0;\n    animation: MORETTI DALLAS-pulse 2s ease-in-out infinite;\n  }\n\n  .MORETTI DALLAS-viewers {\n    right: 16px;\n    top: 16px;\n    background: rgba(255, 255, 255, 0.4);\n    color: #0a1628;\n    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);\n  }\n  \n  .MORETTI DALLAS-viewers .dot {\n    width: 8px;\n    height: 8px;\n    background: #22c55e;\n    border-radius: 50%;\n    flex-shrink: 0;\n    animation: MORETTI DALLAS-pulse 2s ease-in-out infinite;\n  }\n  \n  .MORETTI DALLAS-viewers .num {\n    font-weight: 600;\n    color: #0a1628;\n  }\n\n  .MORETTI DALLAS-discount-ribbon {\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 120px;\n    height: 120px;\n    overflow: hidden;\n    z-index: 1000;\n    pointer-events: none;\n  }\n\n  .MORETTI DALLAS-discount-ribbon__inner {\n    position: absolute;\n    top: 22px;\n    left: -32px;\n    width: 140px;\n    height: 32px;\n    background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);\n    transform: rotate(-45deg);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: \n      0 4px 15px rgba(220, 38, 38, 0.4),\n      0 2px 4px rgba(0, 0, 0, 0.2);\n    opacity: 0;\n    transition: opacity 0.5s ease 0.2s;\n  }\n\n  .MORETTI DALLAS-discount-ribbon__inner.is-visible {\n    opacity: 1;\n  }\n\n  .MORETTI DALLAS-discount-ribbon__text {\n    color: #ffffff;\n    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;\n    font-size: 13px;\n    font-weight: 700;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);\n  }\n\n  @keyframes MORETTI DALLAS-pulse {\n    0%, 100% { opacity: 1; transform: scale(1); }\n    50% { opacity: 0.6; transform: scale(0.85); }\n  }\n\n  @media (max-width: 749px) {\n    .MORETTI DALLAS-badge,\n    .MORETTI DALLAS-viewers {\n      padding: 8px 12px;\n      font-size: 12px;\n      gap: 6px;\n    }\n    .MORETTI DALLAS-badge {\n      left: 12px;\n      bottom: 12px;\n    }\n    .MORETTI DALLAS-viewers {\n      right: 12px;\n      top: 12px;\n    }\n    .MORETTI DALLAS-badge::before,\n    .MORETTI DALLAS-viewers .dot {\n      width: 6px;\n      height: 6px;\n    }\n    .MORETTI DALLAS-discount-ribbon {\n      width: 100px;\n      height: 100px;\n    }\n    .MORETTI DALLAS-discount-ribbon__inner {\n      top: 18px;\n      left: -28px;\n      width: 120px;\n      height: 26px;\n    }\n    .MORETTI DALLAS-discount-ribbon__text {\n      font-size: 11px;\n    }\n  }\n</style>\n\n<script>\n(function() {\n  if (window.__MORETTI DALLAS_badge_init) return;\n  window.__MORETTI DALLAS_badge_init = true;\n\n  // ========================================\n  // VIEWERS: numero base unico per prodotto\n  // ========================================\n  var productId = {{ product.id | json }};\n  \n  function generateBaseFromProductId(id) {\n    var hash = 0;\n    var idStr = String(id);\n    for (var i = 0; i < idStr.length; i++) {\n      hash = ((hash << 5) - hash) + idStr.charCodeAt(i);\n      hash = hash & hash;\n    }\n    return Math.abs(hash % 81) + 15; // Range 15-95\n  }\n\n  var baseViewers = generateBaseFromProductId(productId);\n  var currentViewers = baseViewers;\n  var oscillationRange = 4;\n\n  var msgIndex = 0;\n  var badge1, badge2, discountRibbon;\n  var messageInterval = null;\n  var viewerInterval = null;\n\n  var hasDiscount = {{ has_discount | json }};\n  var discountPercentage = {{ discount_percentage | json }};\n\n  var messages = [\n    \"High demand today\",\n    \"Limited availability\",\n    \"20+ sold in 24h\",\n    \"Selling fast\",\n    \"Few items left\"\n  ];\n\n  // Oscillazione viewers - ogni 3 secondi\n  function startViewerOscillation() {\n    // Pulisci interval esistente\n    if (viewerInterval) {\n      clearInterval(viewerInterval);\n      viewerInterval = null;\n    }\n    \n    viewerInterval = setInterval(function() {\n      var offset = Math.floor(Math.random() * (oscillationRange * 2 + 1)) - oscillationRange;\n      currentViewers = baseViewers + offset;\n      currentViewers = Math.max(15, Math.min(95, currentViewers));\n      \n      var numEl = document.querySelector('.MORETTI DALLAS-viewers .num');\n      if (numEl) numEl.textContent = currentViewers;\n    }, 3000);\n  }\n\n  // Rimuove badge esistenti\n  function removeBadges() {\n    document.querySelectorAll('.MORETTI DALLAS-badge, .MORETTI DALLAS-viewers, .MORETTI DALLAS-discount-ribbon').forEach(function(el) {\n      el.remove();\n    });\n    if (messageInterval) {\n      clearInterval(messageInterval);\n      messageInterval = null;\n    }\n  }\n\n  function mount() {\n    var container = document.querySelector('slideshow-container');\n    if (!container) return false;\n\n    removeBadges();\n\n    // Badge sconto\n    if (hasDiscount && discountPercentage > 0) {\n      discountRibbon = document.createElement('div');\n      discountRibbon.className = 'MORETTI DALLAS-discount-ribbon';\n      discountRibbon.innerHTML = \n        '<div class=\"MORETTI DALLAS-discount-ribbon__inner\">' +\n          '<span class=\"MORETTI DALLAS-discount-ribbon__text\">-' + discountPercentage + '%</span>' +\n        '</div>';\n      container.appendChild(discountRibbon);\n\n      setTimeout(function() {\n        var inner = discountRibbon.querySelector('.MORETTI DALLAS-discount-ribbon__inner');\n        if (inner) inner.classList.add('is-visible');\n      }, 100);\n    }\n\n    // Badge basso sinistra\n    badge1 = document.createElement('div');\n    badge1.className = 'MORETTI DALLAS-badge';\n    badge1.innerHTML = messages[msgIndex];\n\n    // Badge alto destra\n    badge2 = document.createElement('div');\n    badge2.className = 'MORETTI DALLAS-viewers';\n    badge2.innerHTML = '<span class=\"dot\"></span><span class=\"num\">' + currentViewers + '</span> people viewing';\n\n    container.appendChild(badge1);\n    container.appendChild(badge2);\n\n    setTimeout(function() {\n      badge1.classList.add('is-visible');\n      badge2.classList.add('is-visible');\n    }, 100);\n\n    // Rotazione messaggi\n    messageInterval = setInterval(function() {\n      msgIndex = (msgIndex + 1) % messages.length;\n      if (badge1) {\n        badge1.style.opacity = '0';\n        setTimeout(function() {\n          if (badge1) {\n            badge1.innerHTML = messages[msgIndex];\n            badge1.style.opacity = '1';\n          }\n        }, 200);\n      }\n    }, 4000);\n\n    return true;\n  }\n\n  function init() {\n    var attempts = 0;\n    function tryMount() {\n      attempts++;\n      if (mount()) {\n        startViewerOscillation();\n        return;\n      }\n      if (attempts < 30) setTimeout(tryMount, 200);\n    }\n    tryMount();\n  }\n\n  // ========================================\n  // Listener per cambio variante\n  // ========================================\n  \n  function setupObserver() {\n    var container = document.querySelector('slideshow-container');\n    if (!container) return;\n\n    var observer = new MutationObserver(function(mutations) {\n      if (!document.querySelector('.MORETTI DALLAS-badge')) {\n        setTimeout(mount, 100);\n      }\n    });\n\n    observer.observe(container, { \n      childList: true, \n      subtree: true \n    });\n  }\n\n  document.addEventListener('variant:change', function() {\n    setTimeout(mount, 300);\n  });\n\n  document.addEventListener('shopify:section:load', function() {\n    setTimeout(init, 300);\n  });\n\n  document.addEventListener('click', function(e) {\n    var target = e.target;\n    if (target.closest('.product-form__input') || \n        target.closest('[data-variant-input]') ||\n        target.closest('.variant-input') ||\n        target.closest('.swatch') ||\n        target.closest('[data-option-selector]') ||\n        target.closest('.product__option')) {\n      setTimeout(function() {\n        if (!document.querySelector('.MORETTI DALLAS-badge')) {\n          mount();\n        }\n      }, 500);\n    }\n  });\n\n  document.addEventListener('change', function(e) {\n    var target = e.target;\n    if (target.closest('[name^=\"options\"]') || \n        target.closest('select[name=\"id\"]') ||\n        target.closest('.product-form') ||\n        target.closest('[data-product-form]')) {\n      setTimeout(function() {\n        if (!document.querySelector('.MORETTI DALLAS-badge')) {\n          mount();\n        }\n      }, 500);\n    }\n  });\n\n  setInterval(function() {\n    var container = document.querySelector('slideshow-container');\n    if (container && !document.querySelector('.MORETTI DALLAS-badge')) {\n      mount();\n    }\n  }, 2000);\n\n  // Init\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', function() { \n      setTimeout(init, 300);\n      setTimeout(setupObserver, 500);\n    });\n  } else {\n    setTimeout(init, 300);\n    setTimeout(setupObserver, 500);\n  }\n  \n  window.addEventListener('load', function() { \n    setTimeout(init, 500);\n    setTimeout(setupObserver, 700);\n  });\n\n})();\n</script>"
+              },
+              "blocks": {}
+            },
+            "group_icgrde": {
+              "type": "group",
+              "name": "Header",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 3,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "inherit_color_scheme": true,
+                "color_scheme": "",
+                "background_media": "none",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "link": "",
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "text_xrnftG": {
+                  "type": "text",
+                  "name": "Product title",
+                  "settings": {
+                    "text": "<h1>{{ closest.product.title }}</h1>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "h3",
+                    "font": "var(--font-primary--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "product_description_PL8QcB": {
+                  "type": "product-description",
+                  "name": "t:names.product_description",
+                  "settings": {
+                    "text": "{{ closest.product.description }}",
+                    "width": "fit-content",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "price_tVjtKg": {
+                  "type": "price",
+                  "settings": {
+                    "show_sale_price_first": true,
+                    "show_installments": false,
+                    "show_tax_info": false,
+                    "type_preset": "h3",
+                    "width": "100%",
+                    "alignment": "left",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "color": "var(--color-foreground)",
+                    "padding-block-start": 10,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_xrnftG",
+                "judge_me_reviews_preview_badge_a7adpV",
+                "product_description_PL8QcB",
+                "judge_me_reviews_preview_badge_aPzVMz",
+                "price_tVjtKg"
+              ]
+            },
+            "variant_picker_R3rGDr": {
+              "type": "variant-picker",
+              "settings": {
+                "variant_style": "buttons",
+                "show_swatches": false,
+                "alignment": "left",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "custom_liquid_NyUC8f": {
+              "type": "custom-liquid",
+              "name": "t:names.custom_liquid",
+              "disabled": true,
+              "settings": {
+                "custom_liquid": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n\n<button class=\"size-guide-btn\" onclick=\"openSizeGuide()\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 3H3v7h18V3z\"/><path d=\"M21 14h-5v7h5v-7z\"/><path d=\"M12 14H3v7h9v-7z\"/></svg>\n  Size Guide\n</button>\n\n<div class=\"size-modal-overlay\" id=\"sizeModal\" style=\"display:none\" onclick=\"closeSizeGuide(event)\">\n  <div class=\"size-modal\">\n    <button class=\"size-modal-close\" onclick=\"closeSizeGuide()\">&times;</button>\n    {{ product.metafields.custom.size_guide2.value }}\n  </div>\n</div>\n\n<style>\n.size-guide-btn {\n  font-family: 'Inter', sans-serif;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 0;\n  background: none;\n  color: #041626;\n  border: none;\n  font-size: 14px;\n  font-weight: 500;\n  cursor: pointer;\n}\n\n.size-guide-btn:hover {\n  opacity: 0.7;\n}\n\n.size-modal-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0,0,0,0.6);\n  z-index: 2147483646 !important;\n  align-items: center;\n  justify-content: center;\n  padding: 20px;\n}\n\n.size-modal-overlay.active {\n  display: flex !important;\n}\n\n.size-modal {\n  font-family: 'Inter', sans-serif;\n  background: #fff;\n  border-radius: 12px;\n  width: 100%;\n  max-width: 600px;\n  max-height: 85vh;\n  overflow-y: auto;\n  position: relative;\n  padding: 30px;\n  z-index: 2147483647 !important;\n}\n\n.size-modal-close {\n  position: absolute;\n  top: 15px;\n  right: 15px;\n  background: none;\n  border: none;\n  font-size: 28px;\n  color: #666;\n  cursor: pointer;\n  line-height: 1;\n}\n\n.size-modal-close:hover {\n  color: #000;\n}\n\n.size-modal-title {\n  font-size: 22px;\n  font-weight: 700;\n  color: #041626;\n  margin: 0 0 20px 0;\n}\n\n.size-tabs {\n  display: flex;\n  gap: 10px;\n  margin-bottom: 25px;\n}\n\n.size-tab {\n  flex: 1;\n  padding: 12px;\n  background: #f0f0f0;\n  border: none;\n  border-radius: 6px;\n  font-family: 'Inter', sans-serif;\n  font-size: 14px;\n  font-weight: 600;\n  color: #666;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n\n.size-tab.active {\n  background: #041626;\n  color: #fff;\n}\n\n.size-section {\n  margin-bottom: 25px;\n}\n\n.size-section-title {\n  font-size: 16px;\n  font-weight: 600;\n  color: #041626;\n  margin: 0 0 12px 0;\n}\n\n.size-table-wrap {\n  overflow-x: auto;\n}\n\n.size-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n\n.size-table th,\n.size-table td {\n  padding: 10px 12px;\n  text-align: center;\n  border: 1px solid #e0e0e0;\n}\n\n.size-table th {\n  background: #f5f5f5;\n  font-weight: 600;\n  color: #041626;\n}\n\n.size-table td {\n  color: #333;\n}\n\n.size-table tr:nth-child(even) td {\n  background: #fafafa;\n}\n\n.size-note {\n  font-size: 12px;\n  color: #888;\n  margin: 20px 0 0 0;\n  text-align: center;\n}\n\n@media (max-width: 480px) {\n  .size-modal {\n    padding: 20px;\n  }\n  \n  .size-modal-title {\n    font-size: 18px;\n  }\n  \n  .size-table {\n    font-size: 12px;\n  }\n  \n  .size-table th,\n  .size-table td {\n    padding: 8px 6px;\n  }\n}\n</style>\n\n<script>\ndocument.addEventListener('DOMContentLoaded', function() {\n  var modal = document.getElementById('sizeModal');\n  document.body.appendChild(modal);\n});\n\nfunction openSizeGuide() {\n  var modal = document.getElementById('sizeModal');\n  modal.style.display = 'flex';\n  modal.classList.add('active');\n  document.body.style.overflow = 'hidden';\n}\n\nfunction closeSizeGuide(e) {\n  if (!e || e.target === e.currentTarget) {\n    var modal = document.getElementById('sizeModal');\n    modal.style.display = 'none';\n    modal.classList.remove('active');\n    document.body.style.overflow = '';\n  }\n}\n\nfunction switchTab(tab) {\n  document.querySelectorAll('.size-tab').forEach(function(t) {\n    t.classList.remove('active');\n  });\n  event.target.classList.add('active');\n  \n  document.querySelectorAll('.size-content').forEach(function(c) {\n    c.style.display = 'none';\n  });\n  document.getElementById(tab).style.display = 'block';\n}\n</script>"
+              },
+              "blocks": {}
+            },
+            "custom_liquid_yfWgLd": {
+              "type": "custom-liquid",
+              "name": "t:names.custom_liquid",
+              "settings": {
+                "custom_liquid": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap\" rel=\"stylesheet\">\n\n{% if product.metafields.custom.bullet_1 != blank or product.metafields.custom.bullet_2 != blank or product.metafields.custom.bullet_3 != blank %}\n<div class=\"product-bullets\">\n  {% if product.metafields.custom.bullet_1 != blank %}\n  <div class=\"product-bullet\">\n    <span class=\"bullet-dot\"></span>\n    <span class=\"bullet-text\">{{ product.metafields.custom.bullet_1 }}</span>\n  </div>\n  {% endif %}\n  {% if product.metafields.custom.bullet_2 != blank %}\n  <div class=\"product-bullet\">\n    <span class=\"bullet-dot\"></span>\n    <span class=\"bullet-text\">{{ product.metafields.custom.bullet_2 }}</span>\n  </div>\n  {% endif %}\n  {% if product.metafields.custom.bullet_3 != blank %}\n  <div class=\"product-bullet\">\n    <span class=\"bullet-dot\"></span>\n    <span class=\"bullet-text\">{{ product.metafields.custom.bullet_3 }}</span>\n  </div>\n  {% endif %}\n</div>\n{% endif %}\n\n<style>\n.product-bullets {\n  font-family: 'Inter', sans-serif;\n  margin: 10px 0;\n}\n\n.product-bullet {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 5px 0;\n}\n\n.bullet-dot {\n  width: 8px;\n  height: 8px;\n  background: #041626;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n\n.bullet-text {\n  font-size: 16px;\n  font-weight: 500;\n  \n  line-height: 1.4;\n}\n</style>"
+              },
+              "blocks": {}
+            },
+            "custom_liquid_size_guide": {
+              "type": "custom-liquid",
+              "name": "t:names.custom_liquid",
+              "disabled": true,
+              "settings": {
+                "custom_liquid": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n\n{% if product.metafields.custom.size_guide2 != blank %}\n<div class=\"size-guide-inline\">\n  {{ product.metafields.custom.size_guide2 | newline_to_br }}\n</div>\n{% endif %}\n\n<style>\n.size-guide-inline {\n  font-family: 'Inter', sans-serif;\n  padding: 20px;\n  background: #f8f9fa;\n  border-radius: 8px;\n  margin: 15px 0;\n}\n\n.size-guide-inline h1,\n.size-guide-inline h2,\n.size-guide-inline h3,\n.size-guide-inline h4 {\n  font-weight: 700;\n  color: #041626;\n  margin: 0 0 15px 0;\n}\n\n.size-guide-inline h3 {\n  font-size: 18px;\n}\n\n.size-guide-inline p {\n  font-size: 14px;\n  color: #333;\n  line-height: 1.6;\n  margin: 0 0 10px 0;\n}\n\n.size-guide-inline table {\n  width: 100%;\n  border-collapse: collapse;\n  margin: 15px 0;\n  font-size: 13px;\n}\n\n.size-guide-inline th,\n.size-guide-inline td {\n  padding: 10px 12px;\n  text-align: center;\n  border: 1px solid #e0e0e0;\n}\n\n.size-guide-inline th {\n  background: #e9ecef;\n  font-weight: 600;\n  color: #041626;\n}\n\n.size-guide-inline td {\n  background: #fff;\n  color: #333;\n}\n\n.size-guide-inline tr:nth-child(even) td {\n  background: #fafafa;\n}\n\n@media (max-width: 500px) {\n  .size-guide-inline {\n    padding: 15px;\n  }\n\n  .size-guide-inline table {\n    font-size: 12px;\n  }\n\n  .size-guide-inline th,\n  .size-guide-inline td {\n    padding: 8px 6px;\n  }\n}\n</style>"
+              },
+              "blocks": {}
+            },
+            "custom_liquid_zATMEf": {
+              "type": "custom-liquid",
+              "name": "t:names.custom_liquid",
+              "settings": {
+                "custom_liquid": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap\" rel=\"stylesheet\">\n<div class=\"shipping-bar\">\n  <div class=\"shipping-left\">\n    <span class=\"shipping-dot\"></span>\n    <span class=\"shipping-text\">Arrives by <strong id=\"deliveryDate\"></strong></span>\n  </div>\n  <div class=\"shipping-right\">\n    <span class=\"shipping-free\">US <strong>Free</strong> Shipping</span>\n  </div>\n</div>\n<style>\n.shipping-bar {\n  font-family: 'Inter', sans-serif;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 14px 18px;\n  background: #f8f8f8;\n  border-radius: 6px;\n  margin: 0px 0;\n}\n.shipping-left {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.shipping-dot {\n  width: 10px;\n  height: 10px;\n  background: #22c55e;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n.shipping-text {\n  font-size: 14px;\n  color: #041626;\n}\n.shipping-text strong {\n  font-weight: 600;\n  color: #166534;\n}\n.shipping-right {\n  font-size: 14px;\n  color: #041626;\n}\n.shipping-free strong {\n  font-weight: 600;\n}\n@media (max-width: 500px) {\n  .shipping-bar {\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 8px;\n    padding: 12px 15px;\n  }\n  \n  .shipping-text,\n  .shipping-free {\n    font-size: 13px;\n  }\n}\n</style>\n<script>\n(function() {\n  var options = { month: 'short', day: 'numeric' };\n  \n  var minDate = new Date();\n  minDate.setDate(minDate.getDate() + 3);\n  \n  var maxDate = new Date();\n  maxDate.setDate(maxDate.getDate() + 10);\n  \n  var minStr = minDate.toLocaleDateString('en-US', options);\n  var maxStr = maxDate.toLocaleDateString('en-US', options);\n  \n  document.getElementById('deliveryDate').textContent = minStr + ' - ' + maxStr;\n})();\n</script>"
+              },
+              "blocks": {}
+            },
+            "custom_liquid_myR8Uj": {
+              "type": "custom-liquid",
+              "name": "t:names.custom_liquid",
+              "settings": {
+                "custom_liquid": "<div style=\"display:inline-flex;align-items:center;gap:6px;font-family:'Inter',-apple-system,sans-serif;font-size:14px;font-weight:500;color:#dc2626;\">\n  <span style=\"width:6px;height:6px;background:#dc2626;border-radius:50%;\"></span>\n  Only a few left – order soon!\n</div>"
+              },
+              "blocks": {}
+            },
+            "buy_buttons_eYQEYi": {
+              "type": "buy-buttons",
+              "settings": {
+                "stacking": true,
+                "show_pickup_availability": false,
+                "gift_card_form": true,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "quantity": {
+                  "type": "quantity",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                },
+                "add-to-cart": {
+                  "type": "add-to-cart",
+                  "static": true,
+                  "settings": {
+                    "style_class": "button"
+                  },
+                  "blocks": {}
+                },
+                "accelerated-checkout": {
+                  "type": "accelerated-checkout",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": []
+            },
+            "custom_liquid_N7D3m9": {
+              "type": "custom-liquid",
+              "name": "t:names.custom_liquid",
+              "settings": {
+                "custom_liquid": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap\" rel=\"stylesheet\">\n\n<div class=\"trust-accordion\">\n  \n  <div class=\"trust-item\">\n    <button class=\"trust-header\" onclick=\"toggleAccordion(this)\">\n      <span class=\"trust-icon\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path></svg>\n      </span>\n      <span class=\"trust-title\">Secure Payment</span>\n      <span class=\"trust-arrow\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"6 9 12 15 18 9\"></polyline></svg>\n      </span>\n    </button>\n    <div class=\"trust-content\">\n      <p>All transactions are encrypted with SSL technology. We accept Visa, Mastercard, American Express, PayPal, and Apple Pay. Your data is never stored on our servers.</p>\n    </div>\n  </div>\n  \n  <div class=\"trust-item\">\n    <button class=\"trust-header\" onclick=\"toggleAccordion(this)\">\n      <span class=\"trust-icon\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"></path><polyline points=\"9 12 11 14 15 10\"></polyline></svg>\n      </span>\n      <span class=\"trust-title\">Insured Shipping</span>\n      <span class=\"trust-arrow\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"6 9 12 15 18 9\"></polyline></svg>\n      </span>\n    </button>\n    <div class=\"trust-content\">\n      <p>Every order is fully insured during transit. If your package is lost or damaged, we'll send a replacement at no extra cost. Tracking included on all orders.</p>\n    </div>\n  </div>\n  \n  <div class=\"trust-item\">\n    <button class=\"trust-header\" onclick=\"toggleAccordion(this)\">\n      <span class=\"trust-icon\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"1 4 1 10 7 10\"></polyline><path d=\"M3.51 15a9 9 0 1 0 2.13-9.36L1 10\"></path></svg>\n      </span>\n      <span class=\"trust-title\">30-Day Returns</span>\n      <span class=\"trust-arrow\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"6 9 12 15 18 9\"></polyline></svg>\n      </span>\n    </button>\n    <div class=\"trust-content\">\n      <p>Not satisfied? Return any unworn item within 30 days for a full refund. No questions asked. We'll even cover return shipping on orders over $50.</p>\n    </div>\n  </div>\n  \n</div>\n\n<style>\n.trust-accordion {\n  font-family: 'Inter', sans-serif;\n  margin: 25px 0;\n  background: #092C4E;\n  border-radius: 8px;\n  overflow: hidden;\n}\n\n.trust-item {\n  border-bottom: 1px solid rgba(255,255,255,0.12);\n}\n\n.trust-item:last-child {\n  border-bottom: none;\n}\n\n.trust-header {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  gap: 14px;\n  padding: 18px 20px;\n  background: none;\n  border: none;\n  cursor: pointer;\n  text-align: left;\n  transition: background 0.2s;\n}\n\n.trust-header:hover {\n  background: rgba(255,255,255,0.05);\n}\n\n.trust-icon {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 36px;\n  height: 36px;\n  background: rgba(255,255,255,0.1);\n  border-radius: 50%;\n  color: #fff;\n  flex-shrink: 0;\n}\n\n.trust-title {\n  flex: 1;\n  font-size: 15px;\n  font-weight: 600;\n  color: #fff;\n  letter-spacing: -0.01em;\n}\n\n.trust-arrow {\n  color: rgba(255,255,255,0.6);\n  transition: transform 0.3s;\n  display: flex;\n  align-items: center;\n}\n\n.trust-item.active .trust-arrow {\n  transform: rotate(180deg);\n}\n\n.trust-content {\n  max-height: 0;\n  overflow: hidden;\n  transition: max-height 0.3s ease;\n}\n\n.trust-item.active .trust-content {\n  max-height: 200px;\n}\n\n.trust-content p {\n  margin: 0;\n  padding: 0 20px 18px 70px;\n  font-size: 14px;\n  font-weight: 400;\n  line-height: 1.7;\n  color: rgba(255,255,255,0.8);\n}\n</style>\n\n<script>\nfunction toggleAccordion(btn) {\n  var item = btn.parentElement;\n  var isActive = item.classList.contains('active');\n  \n  document.querySelectorAll('.trust-item').forEach(function(el) {\n    el.classList.remove('active');\n  });\n  \n  if (!isActive) {\n    item.classList.add('active');\n  }\n}\n</script>"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "custom_liquid_8fEwNT",
+            "group_icgrde",
+            "variant_picker_R3rGDr",
+            "custom_liquid_NyUC8f",
+            "custom_liquid_yfWgLd",
+            "custom_liquid_size_guide",
+            "custom_liquid_zATMEf",
+            "custom_liquid_myR8Uj",
+            "buy_buttons_eYQEYi",
+            "custom_liquid_N7D3m9"
+          ]
+        }
+      },
+      "custom_css": [
+        ".compare-at-price {font-size: 20px;}"
+      ],
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "equal_columns": true,
+        "limit_details_width": true,
+        "gap": 48,
+        "enable_sticky_add_to_cart": true,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "1767381980b885fa85": {
+      "type": "_blocks",
+      "blocks": {
+        "custom_liquid_nmGLYe": {
+          "type": "custom-liquid",
+          "name": "t:names.custom_liquid",
+          "settings": {
+            "custom_liquid": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n\n<section class=\"product-angles\">\n  \n  <div class=\"angle-box\">\n    <div class=\"angle-img\">\n      <img src=\"https://cdn.shopify.com/s/files/1/0965/4111/4745/files/a682b4e8-31c9-471a-bf14-4539e6cd0af6.jpg?v=1768397269\" alt=\"Italian Quality\">\n    </div>\n    <h3 class=\"angle-title\">Artisan Quality</h3>\n    <p class=\"angle-desc\">Crafted with premium Italian materials and traditional techniques. Every stitch, every detail reflects generations of craftsmanship.</p>\n  </div>\n  \n  <div class=\"angle-box\">\n    <div class=\"angle-img\">\n      <img src=\"https://cdn.shopify.com/s/files/1/0965/4111/4745/files/c5202c8b-15ef-467d-8553-545ec59420a4.png?v=1768397389\" alt=\"All-Day Comfort\">\n    </div>\n    <h3 class=\"angle-title\">All-Day Comfort</h3>\n    <p class=\"angle-desc\">Soft fabrics and ergonomic fits designed for real life. From morning to night, for the whole family.</p>\n  </div>\n  \n  <div class=\"angle-box\">\n    <div class=\"angle-img\">\n      <img src=\"https://cdn.shopify.com/s/files/1/0965/4111/4745/files/52bb9df8-3d25-44c4-93a9-037c09f1a2d9.jpg?v=1768397452\" alt=\"Italian Style\">\n    </div>\n    <h3 class=\"angle-title\">Timeless Style</h3>\n    <p class=\"angle-desc\">Effortless Italian elegance for men, women, and children. Versatile pieces that mix and match for any occasion.</p>\n  </div>\n  \n</section>\n\n<style>\n.product-angles {\n  font-family: 'Inter', sans-serif;\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 30px;\n  width: 100%;\n  padding: 40px 0;\n}\n.angle-box {\n  text-align: center;\n}\n.angle-img {\n  width: 100%;\n  aspect-ratio: 1/1;\n  border-radius: 10px;\n  overflow: hidden;\n  margin-bottom: 20px;\n}\n.angle-img img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n  transition: transform 0.3s;\n}\n.angle-box:hover .angle-img img {\n  transform: scale(1.05);\n}\n.angle-title {\n  font-size: 18px;\n  font-weight: 700;\n  color: #041626;\n  margin: 0 0 10px 0;\n}\n.angle-desc {\n  font-size: 14px;\n  font-weight: 400;\n  color: #555;\n  line-height: 1.6;\n  margin: 0;\n}\n@media (max-width: 768px) {\n  .product-angles {\n    grid-template-columns: 1fr;\n    gap: 60px;\n    padding: 30px 0;\n  }\n  \n  .angle-img {\n    aspect-ratio: 1/1;\n  }\n  \n  .angle-title {\n    font-size: 20px;\n  }\n  \n  .angle-desc {\n    font-size: 15px;\n    max-width: 400px;\n    margin: 0 auto;\n  }\n}\n</style>"
+          },
+          "blocks": {}
+        },
+        "custom_liquid_xiibdU": {
+          "type": "custom-liquid",
+          "name": "t:names.custom_liquid",
+          "disabled": true,
+          "settings": {
+            "custom_liquid": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n\n{% if product.metafields.custom.lifestyle_main_title != blank %}\n<section class=\"lifestyle-section\">\n  \n  <h2 class=\"lifestyle-main-title\">{{ product.metafields.custom.lifestyle_main_title }}</h2>\n  \n  <div class=\"lifestyle-grid\">\n    \n    {% if product.metafields.custom.lifestyle_left_title != blank %}\n    <div class=\"lifestyle-text lifestyle-text--left\">\n      <div class=\"lifestyle-icon\">\n        {% if product.metafields.custom.lifestyle_left_icon != blank %}\n          <img src=\"{{ product.metafields.custom.lifestyle_left_icon | image_url: width: 64 }}\" alt=\"\" width=\"32\" height=\"32\">\n        {% else %}\n          <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><polyline points=\"12 6 12 12 16 14\"></polyline></svg>\n        {% endif %}\n      </div>\n      <h3 class=\"lifestyle-title\">{{ product.metafields.custom.lifestyle_left_title }}</h3>\n      {% if product.metafields.custom.lifestyle_left_text != blank %}\n        <p class=\"lifestyle-desc\">{{ product.metafields.custom.lifestyle_left_text }}</p>\n      {% endif %}\n    </div>\n    {% endif %}\n    \n    <div class=\"lifestyle-gif\">\n      {% if product.metafields.custom.lifestyle_image != blank %}\n        <img src=\"{{ product.metafields.custom.lifestyle_image | image_url: width: 900 }}\" alt=\"{{ product.metafields.custom.lifestyle_main_title }}\">\n      {% else %}\n        <img src=\"https://via.placeholder.com/450x450?text=No+Image\" alt=\"No image\">\n      {% endif %}\n    </div>\n    \n    {% if product.metafields.custom.lifestyle_right_title != blank %}\n    <div class=\"lifestyle-text lifestyle-text--right\">\n      <div class=\"lifestyle-icon\">\n        {% if product.metafields.custom.lifestyle_right_icon != blank %}\n          <img src=\"{{ product.metafields.custom.lifestyle_right_icon | image_url: width: 64 }}\" alt=\"\" width=\"32\" height=\"32\">\n        {% else %}\n          <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"22 12 18 12 15 21 9 3 6 12 2 12\"></polyline></svg>\n        {% endif %}\n      </div>\n      <h3 class=\"lifestyle-title\">{{ product.metafields.custom.lifestyle_right_title }}</h3>\n      {% if product.metafields.custom.lifestyle_right_text != blank %}\n        <p class=\"lifestyle-desc\">{{ product.metafields.custom.lifestyle_right_text }}</p>\n      {% endif %}\n    </div>\n    {% endif %}\n    \n  </div>\n  \n</section>\n{% endif %}\n\n<style>\n.lifestyle-section {\n  font-family: 'Inter', sans-serif;\n  padding: 50px 0px;\n  width: 100%;\n  box-sizing: border-box;\n}\n.lifestyle-main-title {\n  font-size: 32px;\n  font-weight: 700;\n  color: #041626;\n  text-align: center;\n  margin: 0 0 40px 0;\n}\n.lifestyle-grid {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  gap: 40px;\n}\n.lifestyle-text {\n  flex: 1;\n}\n.lifestyle-text--left {\n  text-align: right;\n}\n.lifestyle-text--right {\n  text-align: left;\n}\n.lifestyle-title {\n  font-size: 20px;\n  font-weight: 700;\n  color: #041626;\n  margin: 0 0 12px 0;\n}\n.lifestyle-icon {\n  color: #041626;\n  margin-bottom: 16px;\n}\n.lifestyle-icon img {\n  width: 32px;\n  height: 32px;\n  object-fit: contain;\n}\n.lifestyle-text--left .lifestyle-icon {\n  display: flex;\n  justify-content: flex-end;\n}\n.lifestyle-text--right .lifestyle-icon {\n  display: flex;\n  justify-content: flex-start;\n}\n.lifestyle-desc {\n  font-size: 15px;\n  font-weight: 400;\n  color: #041626;\n  line-height: 1.6;\n  margin: 0;\n  opacity: 0.8;\n}\n.lifestyle-gif {\n  width: 450px;\n  height: 450px;\n  border-radius: 12px;\n  overflow: hidden;\n  flex-shrink: 0;\n}\n.lifestyle-gif img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n@media (max-width: 900px) {\n  .lifestyle-section {\n    padding: 40px 0px;\n  }\n  \n  .lifestyle-main-title {\n    font-size: 26px;\n    margin-bottom: 30px;\n  }\n  \n  .lifestyle-grid {\n    flex-direction: column;\n    gap: 50px;\n  }\n  \n  .lifestyle-text {\n    text-align: center;\n    width: 100%;\n  }\n  \n  .lifestyle-text--left,\n  .lifestyle-text--right {\n    text-align: center;\n  }\n  \n  .lifestyle-text--left .lifestyle-icon,\n  .lifestyle-text--right .lifestyle-icon {\n    justify-content: center;\n  }\n  \n  .lifestyle-text--left {\n    order: 1;\n  }\n  \n  .lifestyle-gif {\n    order: 2;\n    width: 100%;\n    height: auto;\n    aspect-ratio: 1;\n  }\n  \n  .lifestyle-text--right {\n    order: 3;\n  }\n}\n</style>"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "custom_liquid_nmGLYe",
+        "custom_liquid_xiibdU"
+      ],
+      "custom_css": [
+        "h2 {font-size: 50px !important;}",
+        "@media (max-width: 768px) {h2 {font-size: 38px !important; padding-bottom: 15px; padding-top: 10px; }}"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 24,
+        "padding-block-end": 0
+      }
+    },
+    "custom_liquid_bney9n": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n\n<section class=\"faq-section\">\n  <div class=\"faq-box\">\n    <div class=\"faq-container\">\n      \n      <div class=\"faq-left\">\n        <h2 class=\"faq-title\">FAQ</h2>\n        <p class=\"faq-intro\">Still have questions? If you can't find what you're looking for, we're here to help. Reach out to us at:</p>\n        <a href=\"mailto:info@MORETTI DALLAS.com\" class=\"faq-email\">info@MORETTI DALLAS.com</a>\n        <p class=\"faq-hours\">Our team is available Monday through Saturday, 9:00 a.m. to 8:00 p.m. EST. Drop us a line anytime and we'll get back to you as soon as possible.</p>\n        <p class=\"faq-response\">Average response time: 24 hours.</p>\n      </div>\n      \n      <div class=\"faq-right\">\n        <div class=\"faq-accordion\">\n          \n          <div class=\"faq-item active\">\n            <button class=\"faq-question\" onclick=\"toggleFaq(this)\">\n              <span>Is my payment secure?</span>\n              <span class=\"faq-icon\"></span>\n            </button>\n            <div class=\"faq-answer\">\n              <p>Absolutely. We use industry-leading encryption and secure payment processing to keep your information safe.</p>\n            </div>\n          </div>\n          \n          <div class=\"faq-item\">\n            <button class=\"faq-question\" onclick=\"toggleFaq(this)\">\n              <span>Is shipping free?</span>\n              <span class=\"faq-icon\"></span>\n            </button>\n            <div class=\"faq-answer\">\n              <p>Yes! We offer free shipping on all orders.</p>\n            </div>\n          </div>\n          \n          <div class=\"faq-item\">\n            <button class=\"faq-question\" onclick=\"toggleFaq(this)\">\n              <span>What if I change my mind?</span>\n              <span class=\"faq-icon\"></span>\n            </button>\n            <div class=\"faq-answer\">\n              <p>No worries. You have 30 days to return any unworn item for a full refund. Just reach out to our team to start the process.</p>\n            </div>\n          </div>\n          \n          <div class=\"faq-item\">\n            <button class=\"faq-question\" onclick=\"toggleFaq(this)\">\n              <span>What if my size is out of stock?</span>\n              <span class=\"faq-icon\"></span>\n            </button>\n            <div class=\"faq-answer\">\n              <p>Sign up for restock alerts on the product page. We'll notify you the moment your size is back.</p>\n            </div>\n          </div>\n          \n          <div class=\"faq-item\">\n            <button class=\"faq-question\" onclick=\"toggleFaq(this)\">\n              <span>Need help with your order?</span>\n              <span class=\"faq-icon\"></span>\n            </button>\n            <div class=\"faq-answer\">\n              <p>Email us at info@MORETTI DALLAS.com with your order number. We'll sort it out fast.</p>\n            </div>\n          </div>\n          \n        </div>\n      </div>\n      \n    </div>\n  </div>\n</section>\n\n<style>\n.faq-section {\n  font-family: 'Inter', sans-serif;\n  padding: 40px 20px;\n  width: 100%;\n  box-sizing: border-box;\n}\n\n.faq-box {\n  background: #fff;\n  border-radius: 16px;\n  box-shadow: 0 4px 30px rgba(0,0,0,0.08);\n  padding: 50px;\n  max-width: 1100px;\n  margin: 0 auto;\n}\n\n.faq-container {\n  display: flex;\n  gap: 60px;\n  align-items: flex-start;\n}\n\n.faq-left {\n  flex: 1;\n  max-width: 400px;\n}\n\n.faq-title {\n  font-family: 'Inter', sans-serif;\n  font-size: 42px;\n  font-weight: 700;\n  color: #092C4E;\n  margin: 0 0 25px 0;\n}\n\n.faq-intro {\n  font-size: 14px;\n  color: #333;\n  line-height: 1.7;\n  margin: 0 0 15px 0;\n}\n\n.faq-email {\n  display: inline-block;\n  font-size: 14px;\n  color: #092C4E;\n  text-decoration: underline;\n  margin-bottom: 25px;\n}\n\n.faq-email:hover {\n  opacity: 0.7;\n}\n\n.faq-hours {\n  font-size: 14px;\n  color: #333;\n  line-height: 1.7;\n  margin: 0 0 10px 0;\n}\n\n.faq-response {\n  font-size: 14px;\n  color: #666;\n  margin: 0;\n}\n\n.faq-right {\n  flex: 1;\n  max-width: 520px;\n}\n\n.faq-accordion {\n  background: #092C4E;\n  border-radius: 12px;\n  overflow: hidden;\n}\n\n.faq-item {\n  border-bottom: 1px solid rgba(255,255,255,0.1);\n}\n\n.faq-item:last-child {\n  border-bottom: none;\n}\n\n.faq-question {\n  width: 100%;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 20px 25px;\n  background: none;\n  border: none;\n  cursor: pointer;\n  text-align: left;\n}\n\n.faq-question span:first-child {\n  font-family: 'Inter', sans-serif;\n  font-size: 15px;\n  font-weight: 600;\n  color: #fff;\n  flex: 1;\n  padding-right: 15px;\n}\n\n.faq-icon {\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  background: rgba(255,255,255,0.15);\n  position: relative;\n  flex-shrink: 0;\n  transition: background 0.3s;\n}\n\n.faq-icon::before,\n.faq-icon::after {\n  content: '';\n  position: absolute;\n  background: #fff;\n  transition: transform 0.3s;\n}\n\n.faq-icon::before {\n  width: 12px;\n  height: 2px;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n\n.faq-icon::after {\n  width: 2px;\n  height: 12px;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n\n.faq-item.active .faq-icon::after {\n  transform: translate(-50%, -50%) rotate(90deg);\n}\n\n.faq-item.active .faq-icon {\n  background: rgba(255,255,255,0.25);\n}\n\n.faq-answer {\n  max-height: 0;\n  overflow: hidden;\n  transition: max-height 0.3s ease;\n}\n\n.faq-item.active .faq-answer {\n  max-height: 200px;\n}\n\n.faq-answer p {\n  margin: 0;\n  padding: 0 25px 20px 25px;\n  font-size: 14px;\n  color: rgba(255,255,255,0.85);\n  line-height: 1.7;\n}\n\n@media (max-width: 900px) {\n  .faq-section {\n    padding: 30px 10px;\n  }\n  \n  .faq-box {\n    padding: 35px 20px;\n  }\n  \n  .faq-container {\n    flex-direction: column;\n    gap: 35px;\n  }\n  \n  .faq-left,\n  .faq-right {\n    max-width: 100%;\n    width: 100%;\n  }\n  \n  .faq-title {\n    font-size: 32px;\n  }\n}\n\n@media (max-width: 500px) {\n  .faq-section {\n    padding: 25px 5px;\n  }\n  \n  .faq-box {\n    padding: 25px 15px;\n  }\n  \n  .faq-title {\n    font-size: 28px;\n  }\n  \n  .faq-question {\n    padding: 18px 18px;\n  }\n  \n  .faq-question span:first-child {\n    font-size: 14px;\n  }\n  \n  .faq-answer p {\n    padding: 0 18px 18px 18px;\n    font-size: 13px;\n  }\n  \n  .faq-icon {\n    width: 24px;\n    height: 24px;\n  }\n  \n  .faq-icon::before {\n    width: 10px;\n  }\n  \n  .faq-icon::after {\n    height: 10px;\n  }\n}\n</style>\n\n<script>\nfunction toggleFaq(btn) {\n  var item = btn.parentElement;\n  var isActive = item.classList.contains('active');\n  \n  document.querySelectorAll('.faq-item').forEach(function(el) {\n    el.classList.remove('active');\n  });\n  \n  if (!isActive) {\n    item.classList.add('active');\n  }\n}\n</script>",
+        "color_scheme": "",
+        "section_width": "page-width",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "1767798326d3efddf2": {
+      "type": "_blocks",
+      "custom_css": [
+        ".jdgm-review-widget {max-width: 50000px !important;}"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "product_recommendations_qggXJq": {
+      "type": "product-recommendations",
+      "blocks": {
+        "text_cbcgyb": {
+          "type": "text",
+          "name": "t:names.header",
+          "settings": {
+            "text": "<h3>You may also like </h3>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h4",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "name": "t:names.product_card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 8,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 8,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "product_card_gallery_DNizbJ": {
+              "type": "_product-card-gallery",
+              "name": "t:names.product_card_media",
+              "settings": {
+                "image_ratio": "portrait",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "product_title_M7MJkb": {
+              "type": "product-title",
+              "name": "t:names.product_title",
+              "settings": {
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price_gLWgA6": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "product_card_gallery_DNizbJ",
+            "product_title_M7MJkb",
+            "price_gLWgA6"
+          ]
+        }
+      },
+      "block_order": [
+        "text_cbcgyb"
+      ],
+      "name": "t:names.product_recommendations",
+      "settings": {
+        "product": "{{ closest.product }}",
+        "recommendation_type": "related",
+        "layout_type": "carousel",
+        "carousel_on_mobile": false,
+        "max_products": 4,
+        "columns": 4,
+        "mobile_columns": "2",
+        "columns_gap": 12,
+        "rows_gap": 24,
+        "icons_style": "arrow",
+        "icons_shape": "none",
+        "section_width": "page-width",
+        "gap": 28,
+        "color_scheme": "scheme-62105f9c-88d8-493d-a3e0-f7bbaec65dd7",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "custom_liquid_yNLw87": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<style>\n.itlv-reviews-section {\n  max-width: 1200px !important;\n  width: 100% !important;\n  margin: 0 auto !important;\n  padding: 60px 20px !important;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;\n  background: #fff !important;\n  box-sizing: border-box !important;\n}\n\n.itlv-reviews-section * {\n  box-sizing: border-box !important;\n}\n\n.itlv-reviews-header {\n  text-align: center !important;\n  margin-bottom: 40px !important;\n}\n\n.itlv-reviews-header h2 {\n  font-size: 32px !important;\n  font-weight: 700 !important;\n  color: #1a1a1a !important;\n  margin: 0 0 16px 0 !important;\n  padding: 0 !important;\n}\n\n.itlv-rating-summary {\n  display: flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n  gap: 8px !important;\n  margin-bottom: 8px !important;\n}\n\n.itlv-rating-text {\n  font-size: 18px !important;\n  font-weight: 600 !important;\n  color: #1a1a1a !important;\n}\n\n.itlv-stars-summary {\n  display: flex !important;\n  gap: 2px !important;\n}\n\n.itlv-stars-summary .itlv-star {\n  width: 24px !important;\n  height: 24px !important;\n  background: #00b67a !important;\n  display: flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n}\n\n.itlv-stars-summary .itlv-star svg {\n  width: 14px !important;\n  height: 14px !important;\n  fill: #fff !important;\n}\n\n.itlv-reviews-count {\n  font-size: 14px !important;\n  color: #666 !important;\n}\n\n.itlv-reviews-count span {\n  text-decoration: underline !important;\n  font-weight: 500 !important;\n}\n\n.itlv-carousel-wrapper {\n  position: relative !important;\n  padding: 0 60px !important;\n}\n\n.itlv-carousel {\n  display: grid !important;\n  grid-auto-flow: column !important;\n  grid-auto-columns: calc((100% - 40px) / 3) !important;\n  gap: 20px !important;\n  overflow-x: auto !important;\n  scroll-behavior: smooth !important;\n  scrollbar-width: none !important;\n  -ms-overflow-style: none !important;\n  scroll-snap-type: x mandatory !important;\n  padding: 10px 0 !important;\n}\n\n.itlv-carousel::-webkit-scrollbar {\n  display: none !important;\n}\n\n.itlv-card {\n  background: #fff !important;\n  border: 1px solid #e5e5e5 !important;\n  border-radius: 8px !important;\n  padding: 24px !important;\n  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;\n  scroll-snap-align: start !important;\n}\n\n.itlv-card:hover {\n  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;\n}\n\n.itlv-card-stars {\n  display: flex !important;\n  gap: 2px !important;\n  margin-bottom: 16px !important;\n}\n\n.itlv-card-stars .itlv-star {\n  width: 22px !important;\n  height: 22px !important;\n  background: #00b67a !important;\n  display: flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n}\n\n.itlv-card-stars .itlv-star.empty {\n  background: #dcdce6 !important;\n}\n\n.itlv-card-stars .itlv-star svg {\n  width: 12px !important;\n  height: 12px !important;\n  fill: #fff !important;\n}\n\n.itlv-card-text {\n  font-size: 14px !important;\n  line-height: 1.6 !important;\n  color: #333 !important;\n  margin: 0 0 16px 0 !important;\n  min-height: 66px !important;\n}\n\n.itlv-card-author {\n  font-size: 14px !important;\n  font-weight: 600 !important;\n  color: #1a1a1a !important;\n  text-align: center !important;\n  margin: 0 !important;\n}\n\n.itlv-nav {\n  position: absolute !important;\n  top: 50% !important;\n  transform: translateY(-50%) !important;\n  width: 44px !important;\n  height: 44px !important;\n  background: #fff !important;\n  border: 1px solid #e5e5e5 !important;\n  border-radius: 50% !important;\n  cursor: pointer !important;\n  display: flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;\n  z-index: 10 !important;\n  transition: all 0.2s ease !important;\n  padding: 0 !important;\n}\n\n.itlv-nav:hover {\n  background: #f5f5f5 !important;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;\n}\n\n.itlv-nav.prev {\n  left: 0 !important;\n}\n\n.itlv-nav.next {\n  right: 0 !important;\n}\n\n.itlv-nav svg {\n  width: 20px !important;\n  height: 20px !important;\n  fill: #333 !important;\n}\n\n@media (max-width: 900px) {\n  .itlv-carousel {\n    grid-auto-columns: calc((100% - 20px) / 2) !important;\n  }\n  \n  .itlv-carousel-wrapper {\n    padding: 0 50px !important;\n  }\n}\n\n@media (max-width: 600px) {\n  .itlv-reviews-section {\n    padding: 40px 15px !important;\n  }\n  \n  .itlv-reviews-header h2 {\n    font-size: 24px !important;\n  }\n  \n  .itlv-carousel-wrapper {\n    padding: 0 45px !important;\n  }\n  \n  .itlv-carousel {\n    grid-auto-columns: 100% !important;\n    gap: 15px !important;\n  }\n  \n  .itlv-card {\n    padding: 20px !important;\n  }\n  \n  .itlv-nav {\n    width: 36px !important;\n    height: 36px !important;\n  }\n  \n  .itlv-nav svg {\n    width: 16px !important;\n    height: 16px !important;\n  }\n  \n  .itlv-rating-summary {\n    flex-wrap: wrap !important;\n    justify-content: center !important;\n  }\n}\n</style>\n\n<div class=\"itlv-reviews-section\">\n  <div class=\"itlv-reviews-header\">\n    <h2>Here's What Our Customers Say About MORETTI DALLAS</h2>\n    <div class=\"itlv-rating-summary\">\n      <span class=\"itlv-rating-text\">Excellent 4.8 / 5</span>\n      <div class=\"itlv-stars-summary\">\n        <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n      </div>\n    </div>\n    <p class=\"itlv-reviews-count\">Based on <span>verified reviews</span> about the shop.</p>\n  </div>\n  \n  <div class=\"itlv-carousel-wrapper\">\n    <button class=\"itlv-nav prev\" onclick=\"itlvScroll(-1)\">\n      <svg viewBox=\"0 0 24 24\"><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>\n    </button>\n    \n    <div class=\"itlv-carousel\" id=\"itlvCarousel\">\n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">ok wow these sandals are SO comfy!! got them in 3 days too which was nice. already ordered another pair in black lol</p>\n        <p class=\"itlv-card-author\">Jessica M.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">Good loafers, fit perfect right away. Leather feels solid. Took 4 days to CA which is pretty fast considering.</p>\n        <p class=\"itlv-card-author\">Michael T.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">This dress is even prettier in person! Fits true to size and the fabric is really nice quality. Came super fast, like 3 days</p>\n        <p class=\"itlv-card-author\">Sarah K.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star empty\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">Cute flats but they run a little small, had to exchange for half size up. Other than that theyre great and comfy. Shipping took 4 days</p>\n        <p class=\"itlv-card-author\">Emily R.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">obsessed with these wedges!! wore them to a wedding and got so many compliments. no blisters either which never happens to me</p>\n        <p class=\"itlv-card-author\">Amanda L.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">Needed dress shoes for a wedding, these look great. Real leather not that fake stuff. Got here in 4 days which saved me</p>\n        <p class=\"itlv-card-author\">David H.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">the linen top is so good for summer, not see through like other ones ive bought. washes well too. arrived in 3 days</p>\n        <p class=\"itlv-card-author\">Rachel P.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">love love love these mules. super easy to walk in and look way more expensive than they are. got them in 3 days!</p>\n        <p class=\"itlv-card-author\">Nicole S.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">2nd time ordering, still impressed. Espadrilles fit great and super comfy for walking around all day. 4 days to Texas</p>\n        <p class=\"itlv-card-author\">Brittany W.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">Really nice boat shoes. Good quality leather and stitching looks solid. True to size. Shipping was only 3 days which was a nice surprise</p>\n        <p class=\"itlv-card-author\">James C.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">the wrap dress fits SO well, feels like it was made for me. Material is thick enough that you dont need a slip. here in 3 days</p>\n        <p class=\"itlv-card-author\">Christina D.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">finally found strappy sandals that dont hurt!! wore them straight out of the box, no breaking in needed. 4 day delivery</p>\n        <p class=\"itlv-card-author\">Lauren B.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">These ankle boots are everything. Leather is so soft and they fit perfect. Cant believe shipping was only 3 days, thought itd take forever</p>\n        <p class=\"itlv-card-author\">Megan F.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">solid sneakers, comfortable for all day. Been wearing them to work every day for 2 weeks now. Took about 4 days to get here</p>\n        <p class=\"itlv-card-author\">Robert A.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">this blouse!! the silk is actually real silk not that polyester stuff. Fits beautifully and got here in 3 days. buying more colors</p>\n        <p class=\"itlv-card-author\">Ashley G.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">perfect kitten heels for work, actually comfortable enough to wear all day. good arch support which is rare. delivered in 4 days</p>\n        <p class=\"itlv-card-author\">Stephanie J.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">got the maxi skirt in 2 colors now, they flow so nice and the waistband doesnt roll down. great quality. 3 day shipping both times</p>\n        <p class=\"itlv-card-author\">Danielle V.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">Wife got me these driving mocs for my bday. Super comfortable, wear them all the time now. Leather is soft, fits true to size</p>\n        <p class=\"itlv-card-author\">William N.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">these pointed flats are my new go-to, so comfy i forget im wearing heels lol. no rubbing or blisters. 4 days to FL</p>\n        <p class=\"itlv-card-author\">Kimberly E.</p>\n      </div>\n      \n      <div class=\"itlv-card\">\n        <div class=\"itlv-card-stars\">\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n          <div class=\"itlv-star\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/></svg></div>\n        </div>\n        <p class=\"itlv-card-text\">3rd order and still happy! cardigan is super soft and the color is exactly like the picture. fits perfect, shipping was 3 days again</p>\n        <p class=\"itlv-card-author\">Jennifer O.</p>\n      </div>\n    </div>\n    \n    <button class=\"itlv-nav next\" onclick=\"itlvScroll(1)\">\n      <svg viewBox=\"0 0 24 24\"><path d=\"M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z\"/></svg>\n    </button>\n  </div>\n</div>\n\n<script>\n(function() {\n  var carousel = document.getElementById('itlvCarousel');\n  var cardsPerView = 3;\n  \n  function updateCardsPerView() {\n    if (window.innerWidth <= 600) cardsPerView = 1;\n    else if (window.innerWidth <= 900) cardsPerView = 2;\n    else cardsPerView = 3;\n  }\n  \n  updateCardsPerView();\n  window.addEventListener('resize', updateCardsPerView);\n  \n  window.itlvScroll = function(direction) {\n    var card = carousel.querySelector('.itlv-card');\n    var style = window.getComputedStyle(carousel);\n    var gap = parseInt(style.gap) || 20;\n    var cardWidth = card.offsetWidth + gap;\n    carousel.scrollBy({\n      left: direction * cardWidth * cardsPerView,\n      behavior: 'smooth'\n    });\n  };\n  \n  var autoScroll = setInterval(function() {\n    var maxScroll = carousel.scrollWidth - carousel.clientWidth;\n    if (carousel.scrollLeft >= maxScroll - 10) {\n      carousel.scrollTo({ left: 0, behavior: 'smooth' });\n    } else {\n      var card = carousel.querySelector('.itlv-card');\n      var style = window.getComputedStyle(carousel);\n      var gap = parseInt(style.gap) || 20;\n      var cardWidth = card.offsetWidth + gap;\n      carousel.scrollBy({ left: cardWidth * cardsPerView, behavior: 'smooth' });\n    }\n  }, 5000);\n  \n  carousel.addEventListener('mouseenter', function() { clearInterval(autoScroll); });\n  carousel.addEventListener('mouseleave', function() {\n    autoScroll = setInterval(function() {\n      var maxScroll = carousel.scrollWidth - carousel.clientWidth;\n      if (carousel.scrollLeft >= maxScroll - 10) {\n        carousel.scrollTo({ left: 0, behavior: 'smooth' });\n      } else {\n        var card = carousel.querySelector('.itlv-card');\n        var style = window.getComputedStyle(carousel);\n        var gap = parseInt(style.gap) || 20;\n        var cardWidth = card.offsetWidth + gap;\n        carousel.scrollBy({ left: cardWidth * cardsPerView, behavior: 'smooth' });\n      }\n    }, 5000);\n  });\n  \n  var touchStartX = 0;\n  carousel.addEventListener('touchstart', function(e) {\n    touchStartX = e.changedTouches[0].screenX;\n  }, { passive: true });\n  \n  carousel.addEventListener('touchend', function(e) {\n    var diff = touchStartX - e.changedTouches[0].screenX;\n    if (Math.abs(diff) > 50) itlvScroll(diff > 0 ? 1 : -1);\n  }, { passive: true });\n})();\n</script>",
+        "color_scheme": "scheme-62105f9c-88d8-493d-a3e0-f7bbaec65dd7",
+        "section_width": "full-width",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "hero_nfQtXF": {
+      "type": "hero",
+      "blocks": {
+        "jumbo_text_7bEmKC": {
+          "type": "jumbo-text",
+          "name": "t:names.jumbo_text",
+          "settings": {
+            "text": "Just be Real.",
+            "font": "heading",
+            "alignment": "left",
+            "line_height": "0.8",
+            "letter_spacing": "-0.03em",
+            "case": "none",
+            "text_effect": "none",
+            "animation_repeat": false
+          },
+          "blocks": {}
+        },
+        "text_by6fxz": {
+          "type": "text",
+          "settings": {
+            "text": "<p>We don’t care who you are. We care who you choose to be.</p>",
+            "width": "fit-content",
+            "max_width": "narrow",
+            "alignment": "left",
+            "type_preset": "h3",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": true,
+            "background_color": "#0000006e",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "jumbo_text_7bEmKC",
+        "text_by6fxz"
+      ],
+      "name": "t:names.hero",
+      "settings": {
+        "media_type_1": "image",
+        "image_1": "shopify://shop_images/general-clothing-bold-4.jpg",
+        "media_type_2": "image",
+        "stack_media_on_mobile": false,
+        "custom_mobile_media": false,
+        "media_type_1_mobile": "image",
+        "media_type_2_mobile": "image",
+        "link": "shopify://collections/all",
+        "open_in_new_tab": true,
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "space-between",
+        "vertical_alignment": "flex-end",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "space-between",
+        "gap": 16,
+        "section_width": "page-width",
+        "section_height": "large",
+        "section_height_custom": 50,
+        "color_scheme": "scheme-4",
+        "toggle_overlay": true,
+        "overlay_color": "#00000057",
+        "overlay_style": "gradient",
+        "gradient_direction": "to bottom",
+        "blurred_reflection": false,
+        "reflection_opacity": 75,
+        "padding-block-start": 72,
+        "padding-block-end": 72
+      }
+    }
+  },
+  "order": [
+    "main",
+    "1767381980b885fa85",
+    "custom_liquid_bney9n",
+    "1767798326d3efddf2",
+    "product_recommendations_qggXJq",
+    "custom_liquid_yNLw87",
+    "hero_nfQtXF"
+  ]
+}

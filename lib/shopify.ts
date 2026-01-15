@@ -508,6 +508,68 @@ export const PRODUCT_OPTIONS_CREATE_MUTATION = `
   }
 `;
 
+// Delete a product option
+export const PRODUCT_OPTION_DELETE_MUTATION = `
+  mutation productOptionDelete($productId: ID!, $optionId: ID!) {
+    productOptionDelete(productId: $productId, optionId: $optionId) {
+      userErrors {
+        field
+        message
+        code
+      }
+      deletedOptionId
+      product {
+        id
+        options {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+// Update a product option (rename or update values)
+export const PRODUCT_OPTION_UPDATE_MUTATION = `
+  mutation productOptionUpdate($productId: ID!, $optionId: ID!, $option: OptionUpdateInput!) {
+    productOptionUpdate(productId: $productId, optionId: $optionId, option: $option) {
+      userErrors {
+        field
+        message
+        code
+      }
+      product {
+        id
+        options {
+          id
+          name
+          optionValues {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Bulk delete product variants
+export const PRODUCT_VARIANTS_BULK_DELETE_MUTATION = `
+  mutation productVariantsBulkDelete($productId: ID!, $variantsIds: [ID!]!) {
+    productVariantsBulkDelete(productId: $productId, variantsIds: $variantsIds) {
+      userErrors {
+        field
+        message
+        code
+      }
+      product {
+        id
+        title
+      }
+    }
+  }
+`;
+
 // Create product with options (for variants)
 export const PRODUCT_CREATE_WITH_OPTIONS_MUTATION = `
   mutation productCreate($input: ProductInput!) {

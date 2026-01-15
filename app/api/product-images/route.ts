@@ -119,45 +119,71 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (file && file.size > 0) {
-        // Create staged upload
-        const stagedResponse: any = await shopifyGraphqlWithRefresh(
-          shop.shop,
-          STAGED_UPLOADS_CREATE_MUTATION,
-          {
-            input: [{
-              filename: file.name,
-              mimeType: file.type,
-              httpMethod: 'POST',
-              resource: 'IMAGE',
-            }],
-          }
-        );
+        console.log(`[IMAGES] Processing file ${i + 1}/${files.length}: ${file.name}, size: ${file.size}, type: ${file.type}`);
 
-        if (stagedResponse.stagedUploadsCreate.userErrors?.length > 0) {
-          console.error('Staged upload error:', stagedResponse.stagedUploadsCreate.userErrors);
+        try {
+          // Read file data into ArrayBuffer to ensure it's fully loaded
+          // This prevents issues with File objects being "consumed" on first read
+          const fileArrayBuffer = await file.arrayBuffer();
+          const fileBlob = new Blob([fileArrayBuffer], { type: file.type || 'image/jpeg' });
+          const fileName = file.name || `image-${Date.now()}.jpg`;
+
+          console.log(`[IMAGES] File ${fileName} loaded into memory: ${fileBlob.size} bytes`);
+
+          // Create staged upload
+          const stagedResponse: any = await shopifyGraphqlWithRefresh(
+            shop.shop,
+            STAGED_UPLOADS_CREATE_MUTATION,
+            {
+              input: [{
+                filename: fileName,
+                mimeType: file.type || 'image/jpeg',
+                httpMethod: 'POST',
+                resource: 'IMAGE',
+              }],
+            }
+          );
+
+          if (stagedResponse.stagedUploadsCreate.userErrors?.length > 0) {
+            console.error(`[IMAGES] Staged upload error for ${fileName}:`, stagedResponse.stagedUploadsCreate.userErrors);
+            continue;
+          }
+
+          const stagedTarget = stagedResponse.stagedUploadsCreate.stagedTargets[0];
+          console.log(`[IMAGES] Staged target for ${fileName}: ${stagedTarget.url}`);
+
+          // Upload file to staged URL using the cloned blob
+          const uploadFormData = new FormData();
+          for (const param of stagedTarget.parameters) {
+            uploadFormData.append(param.name, param.value);
+          }
+          // Use the blob instead of original file to ensure fresh data
+          uploadFormData.append('file', fileBlob, fileName);
+
+          const uploadResponse = await fetch(stagedTarget.url, {
+            method: 'POST',
+            body: uploadFormData,
+          });
+
+          // Check upload response
+          if (!uploadResponse.ok) {
+            const errorText = await uploadResponse.text();
+            console.error(`[IMAGES] Upload failed for ${fileName}: ${uploadResponse.status} - ${errorText}`);
+            continue;
+          }
+
+          console.log(`[IMAGES] Upload successful for ${fileName}: ${uploadResponse.status}`);
+
+          // Add to media inputs using the resourceUrl
+          mediaInputs.push({
+            originalSource: stagedTarget.resourceUrl,
+            mediaContentType: 'IMAGE',
+            alt: altTexts[imageUrls.length + i] || '',
+          });
+        } catch (fileError: any) {
+          console.error(`[IMAGES] Error processing file ${file.name}:`, fileError.message);
           continue;
         }
-
-        const stagedTarget = stagedResponse.stagedUploadsCreate.stagedTargets[0];
-
-        // Upload file to staged URL
-        const uploadFormData = new FormData();
-        for (const param of stagedTarget.parameters) {
-          uploadFormData.append(param.name, param.value);
-        }
-        uploadFormData.append('file', file);
-
-        await fetch(stagedTarget.url, {
-          method: 'POST',
-          body: uploadFormData,
-        });
-
-        // Add to media inputs using the resourceUrl
-        mediaInputs.push({
-          originalSource: stagedTarget.resourceUrl,
-          mediaContentType: 'IMAGE',
-          alt: altTexts[imageUrls.length + i] || '',
-        });
       }
     }
 

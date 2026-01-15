@@ -5,8 +5,15 @@ import { VariantOption, VariantCombination, ProductImage } from '@/types/shopify
 import VariantBuilder from './VariantBuilder';
 import ImageGallery from './ImageGallery';
 
+interface Shop {
+  id: string;
+  name: string;
+  shop: string;
+}
+
 interface ProductFormProps {
-  shopId: string;
+  shops: Shop[];
+  selectedShopId?: string;
   product?: any;
   onSuccess?: () => void;
 }
@@ -16,11 +23,22 @@ const generateSku = () => {
   return Math.floor(10000 + Math.random() * 90000).toString();
 };
 
-export default function ProductForm({ shopId, product, onSuccess }: ProductFormProps) {
+export default function ProductForm({ shops, selectedShopId, product, onSuccess }: ProductFormProps) {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
+
+  // Selected shops for product creation
+  const [selectedShops, setSelectedShops] = useState<string[]>(() => {
+    // Default: select the shop that was selected in dashboard, or first shop
+    if (selectedShopId) return [selectedShopId];
+    if (shops.length > 0) return [shops[0].id];
+    return [];
+  });
+
+  // For edit mode, use the selectedShopId (single shop)
+  const shopId = selectedShopId || (shops.length > 0 ? shops[0].id : '');
 
   // Edit mode
   const isEditing = !!product?.shopifyId || !!product?.id;
@@ -112,6 +130,9 @@ export default function ProductForm({ shopId, product, onSuccess }: ProductFormP
   // Size Guide
   const [sizeGuide2, setSizeGuide2] = useState('');
 
+  // Product handle (for finding product on other shops in edit mode)
+  const [productHandle, setProductHandle] = useState('');
+
   // Load product data when editing
   useEffect(() => {
     console.log('[ProductForm] useEffect triggered, product:', product);
@@ -198,6 +219,11 @@ export default function ProductForm({ shopId, product, onSuccess }: ProductFormP
             url: img.url,
             altText: img.altText,
           })));
+        }
+
+        // Save handle for multi-shop edit
+        if (p.handle) {
+          setProductHandle(p.handle);
         }
 
         console.log('[EDIT] Product data loaded:', p);
@@ -361,10 +387,10 @@ export default function ProductForm({ shopId, product, onSuccess }: ProductFormP
   };
 
   // Upload file and get Shopify file GID
-  const uploadFileForMetafield = async (file: File): Promise<string | null> => {
+  const uploadFileForMetafield = async (file: File, targetShopId: string): Promise<string | null> => {
     try {
       const formData = new FormData();
-      formData.append('shopId', shopId);
+      formData.append('shopId', targetShopId);
       formData.append('file', file);
 
       const res = await fetch('/api/upload-media', {
@@ -382,226 +408,660 @@ export default function ProductForm({ shopId, product, onSuccess }: ProductFormP
     return null;
   };
 
+  // Result type for product creation/update
+  interface ProductOperationResult {
+    success: boolean;
+    warnings: string[];
+    complete: boolean;
+  }
+
+  // Track images to delete (for edit mode with multiple shops)
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+
+  // Update product on a single shop
+  const updateProductOnShop = async (
+    targetShopId: string,
+    shopName: string,
+    shopIndex: number,
+    totalShops: number,
+    productHandle: string
+  ): Promise<ProductOperationResult> => {
+    const prefix = totalShops > 1 ? `[${shopIndex + 1}/${totalShops}] ${shopName}: ` : '';
+
+    // ========== STEP 1: Find product on this shop by handle ==========
+    setLoadingMessage(`${prefix}Ricerca prodotto...`);
+
+    const findResponse = await fetch(`/api/find-product-by-handle?shopId=${targetShopId}&handle=${productHandle}`);
+    const findResult = await findResponse.json();
+
+    if (!findResult.success || !findResult.productId) {
+      throw new Error(`Prodotto non trovato su ${shopName}`);
+    }
+
+    const targetProductId = findResult.productId;
+
+    // ========== STEP 2: Upload metafield images ==========
+    setLoadingMessage(`${prefix}Caricamento immagini metafield...`);
+
+    const uploads: { key: string; file: File }[] = [];
+    if (angle1ImageFile) uploads.push({ key: 'angle_1_image', file: angle1ImageFile });
+    if (angle2ImageFile) uploads.push({ key: 'angle_2_image', file: angle2ImageFile });
+    if (angle3ImageFile) uploads.push({ key: 'angle_3_image', file: angle3ImageFile });
+    if (lifestyleLeftIconFile) uploads.push({ key: 'lifestyle_left_icon', file: lifestyleLeftIconFile });
+    if (lifestyleImageFile) uploads.push({ key: 'lifestyle_image', file: lifestyleImageFile });
+    if (lifestyleRightIconFile) uploads.push({ key: 'lifestyle_right_icon', file: lifestyleRightIconFile });
+
+    const uploadedGids: Record<string, string> = {};
+    for (const upload of uploads) {
+      const gid = await uploadFileForMetafield(upload.file, targetShopId);
+      if (gid) uploadedGids[upload.key] = gid;
+    }
+
+    // ========== STEP 3: Build metafields ==========
+    const metafields: Record<string, string> = {};
+
+    if (bullet1) metafields.bullet_1 = bullet1;
+    if (bullet2) metafields.bullet_2 = bullet2;
+    if (bullet3) metafields.bullet_3 = bullet3;
+
+    if (uploadedGids.angle_1_image) metafields.angle_1_image = uploadedGids.angle_1_image;
+    if (angle1Title) metafields.angle_1_title = angle1Title;
+    if (angle1Text) metafields.angle_1_text = angle1Text;
+
+    if (uploadedGids.angle_2_image) metafields.angle_2_image = uploadedGids.angle_2_image;
+    if (angle2Title) metafields.angle_2_title = angle2Title;
+    if (angle2Text) metafields.angle_2_text = angle2Text;
+
+    if (uploadedGids.angle_3_image) metafields.angle_3_image = uploadedGids.angle_3_image;
+    if (angle3Title) metafields.angle_3_title = angle3Title;
+    if (angle3Text) metafields.angle_3_text = angle3Text;
+
+    if (lifestyleMainTitle) metafields.lifestyle_main_title = lifestyleMainTitle;
+    if (lifestyleLeftTitle) metafields.lifestyle_left_title = lifestyleLeftTitle;
+    if (uploadedGids.lifestyle_left_icon) metafields.lifestyle_left_icon = uploadedGids.lifestyle_left_icon;
+    if (lifestyleLeftText) metafields.lifestyle_left_text = lifestyleLeftText;
+    if (uploadedGids.lifestyle_image) metafields.lifestyle_image = uploadedGids.lifestyle_image;
+    if (lifestyleRightTitle) metafields.lifestyle_right_title = lifestyleRightTitle;
+    if (uploadedGids.lifestyle_right_icon) metafields.lifestyle_right_icon = uploadedGids.lifestyle_right_icon;
+    if (lifestyleRightText) metafields.lifestyle_right_text = lifestyleRightText;
+
+    if (sizeGuide2) metafields.size_guide2 = sizeGuide2;
+
+    // ========== STEP 4: Update product ==========
+    setLoadingMessage(`${prefix}Aggiornamento prodotto...`);
+
+    const parsedTags = tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+
+    const payload = {
+      productId: targetProductId,
+      shopId: targetShopId,
+      title,
+      description,
+      price: parseFloat(price) || 0,
+      compareAtPrice: parseFloat(compareAtPrice) || null,
+      sku: sku || undefined,
+      tags: parsedTags,
+      metafields,
+    };
+
+    const response = await fetch('/api/update-product', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Errore aggiornamento prodotto');
+    }
+
+    const updateResult = await response.json();
+    const productWarnings: string[] = updateResult.warnings || [];
+
+    // ========== STEP 5: Delete removed images ==========
+    if (imagesToDelete.length > 0) {
+      setLoadingMessage(`${prefix}Rimozione immagini...`);
+
+      // Get images from this shop's product to find matching ones to delete
+      const imagesResponse = await fetch(`/api/product-images?shopId=${targetShopId}&productId=${targetProductId}`);
+      const imagesResult = await imagesResponse.json();
+
+      if (imagesResult.success && imagesResult.images) {
+        // Find images to delete by URL match (since IDs differ across shops)
+        for (const imgUrl of imagesToDelete) {
+          const matchingImage = imagesResult.images.find((img: any) =>
+            img.url === imgUrl || img.url?.includes(imgUrl.split('/').pop())
+          );
+
+          if (matchingImage?.id) {
+            try {
+              await fetch(
+                `/api/product-images?shopId=${targetShopId}&productId=${targetProductId}&mediaId=${matchingImage.id}`,
+                { method: 'DELETE' }
+              );
+            } catch (e) {
+              console.error(`Failed to delete image on ${shopName}:`, e);
+            }
+          }
+        }
+      }
+    }
+
+    // ========== STEP 6: Upload new gallery images ==========
+    let imageUrlToMediaId: Record<string, string> = {};
+    const newImages = productImages.filter(img => !img.id && (img.file || img.url));
+
+    if (newImages.length > 0) {
+      setLoadingMessage(`${prefix}Caricamento ${newImages.length} nuove immagini...`);
+
+      const imageFormData = new FormData();
+      imageFormData.append('shopId', targetShopId);
+      imageFormData.append('productId', targetProductId);
+
+      // Track blob URLs in order for mapping
+      const orderedBlobUrls: string[] = [];
+
+      // URLs first (same order as API)
+      newImages.forEach((img) => {
+        if (img.url && !img.url.startsWith('blob:')) {
+          imageFormData.append('imageUrls', img.url);
+          orderedBlobUrls.push(img.url);
+        }
+      });
+
+      // Files second
+      newImages.forEach((img) => {
+        if (img.file && img.url) {
+          imageFormData.append('files', img.file);
+          orderedBlobUrls.push(img.url);
+        }
+      });
+
+      console.log(`[IMAGES] Uploading to ${shopName} with blob URLs:`, orderedBlobUrls);
+
+      const imgResponse = await fetch('/api/product-images', {
+        method: 'POST',
+        body: imageFormData,
+      });
+
+      const imgResult = await imgResponse.json();
+
+      if (!imgResult.success) {
+        console.error(`[IMAGES] Upload to ${shopName} failed:`, imgResult.error);
+        productWarnings.push(`Errore caricamento immagini: ${imgResult.error}`);
+      } else {
+        console.log(`[IMAGES] Upload to ${shopName} success, received:`, imgResult.images?.length, 'images');
+
+        // Build blob URL -> mediaId mapping
+        if (imgResult.images) {
+          imgResult.images.forEach((uploadedImg: any, idx: number) => {
+            if (uploadedImg.id) {
+              const blobUrl = orderedBlobUrls[idx];
+              if (blobUrl) {
+                imageUrlToMediaId[blobUrl] = uploadedImg.id;
+              }
+            }
+          });
+        }
+      }
+    }
+
+    // ========== STEP 7: Update variants ==========
+    if (variantOptions.length > 0 && variantCombinations.length > 0) {
+      setLoadingMessage(`${prefix}Aggiornamento varianti...`);
+
+      // Get main price as fallback for variants with no price
+      const mainPrice = parseFloat(price) || 0;
+      const mainCompareAt = parseFloat(compareAtPrice) || 0;
+
+      // Map blob URLs to Shopify mediaIds AND ensure prices are set
+      const updatedCombinations = variantCombinations.map(combo => {
+        let mediaId: string | undefined = undefined;
+
+        // Try to find mediaId from imageUrl (blob URL)
+        if (combo.imageUrl && imageUrlToMediaId[combo.imageUrl]) {
+          mediaId = imageUrlToMediaId[combo.imageUrl];
+        }
+        // Or from imageId if it's a blob URL
+        else if (combo.imageId && imageUrlToMediaId[combo.imageId]) {
+          mediaId = imageUrlToMediaId[combo.imageId];
+        }
+        // Keep existing imageId if it's already a Shopify ID
+        else if (combo.imageId && combo.imageId.startsWith('gid://')) {
+          mediaId = combo.imageId;
+        }
+
+        // Ensure variant has a valid price - use main price if variant price is 0 or empty
+        const variantPrice = parseFloat(String(combo.price)) || 0;
+        const variantCompareAt = parseFloat(String(combo.compareAtPrice)) || 0;
+
+        const finalPrice = variantPrice > 0 ? variantPrice : mainPrice;
+        const finalCompareAt = variantCompareAt > 0 ? variantCompareAt : (mainCompareAt > 0 ? mainCompareAt : undefined);
+
+        console.log(`[VARIANTS UPDATE] Price for ${JSON.stringify(combo.options)}: variant=${variantPrice}, main=${mainPrice}, final=${finalPrice}`);
+
+        return {
+          ...combo,
+          price: finalPrice.toFixed(2),
+          compareAtPrice: finalCompareAt ? finalCompareAt.toFixed(2) : undefined,
+          imageId: mediaId,
+        };
+      });
+
+      const variantRes = await fetch('/api/variants', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shopId: targetShopId,
+          productId: targetProductId,
+          options: variantOptions,
+          variants: updatedCombinations,
+        }),
+      });
+
+      const variantData = await variantRes.json();
+
+      if (!variantRes.ok || !variantData.success) {
+        console.error(`[VARIANTS] Update on ${shopName} failed:`, variantData.error);
+        productWarnings.push(`Errore varianti: ${variantData.error}`);
+      } else {
+        console.log(`[VARIANTS] Updated on ${shopName} successfully:`, variantData.variants?.length || 0, 'variants');
+      }
+    }
+
+    return {
+      success: true,
+      warnings: productWarnings,
+      complete: updateResult.complete !== false && productWarnings.length === 0,
+    };
+  };
+
+  // Create product on a single shop
+  const createProductOnShop = async (
+    targetShopId: string,
+    shopName: string,
+    shopIndex: number,
+    totalShops: number
+  ): Promise<ProductOperationResult> => {
+    const prefix = totalShops > 1 ? `[${shopIndex + 1}/${totalShops}] ${shopName}: ` : '';
+
+    // ========== STEP 1: Upload metafield images ==========
+    setLoadingMessage(`${prefix}Caricamento immagini metafield...`);
+
+    const uploads: { key: string; file: File }[] = [];
+    if (angle1ImageFile) uploads.push({ key: 'angle_1_image', file: angle1ImageFile });
+    if (angle2ImageFile) uploads.push({ key: 'angle_2_image', file: angle2ImageFile });
+    if (angle3ImageFile) uploads.push({ key: 'angle_3_image', file: angle3ImageFile });
+    if (lifestyleLeftIconFile) uploads.push({ key: 'lifestyle_left_icon', file: lifestyleLeftIconFile });
+    if (lifestyleImageFile) uploads.push({ key: 'lifestyle_image', file: lifestyleImageFile });
+    if (lifestyleRightIconFile) uploads.push({ key: 'lifestyle_right_icon', file: lifestyleRightIconFile });
+
+    const uploadedGids: Record<string, string> = {};
+    for (const upload of uploads) {
+      const gid = await uploadFileForMetafield(upload.file, targetShopId);
+      if (gid) uploadedGids[upload.key] = gid;
+    }
+
+    // ========== STEP 2: Build metafields ==========
+    const metafields: Record<string, string> = {};
+
+    if (bullet1) metafields.bullet_1 = bullet1;
+    if (bullet2) metafields.bullet_2 = bullet2;
+    if (bullet3) metafields.bullet_3 = bullet3;
+
+    if (uploadedGids.angle_1_image) metafields.angle_1_image = uploadedGids.angle_1_image;
+    if (angle1Title) metafields.angle_1_title = angle1Title;
+    if (angle1Text) metafields.angle_1_text = angle1Text;
+
+    if (uploadedGids.angle_2_image) metafields.angle_2_image = uploadedGids.angle_2_image;
+    if (angle2Title) metafields.angle_2_title = angle2Title;
+    if (angle2Text) metafields.angle_2_text = angle2Text;
+
+    if (uploadedGids.angle_3_image) metafields.angle_3_image = uploadedGids.angle_3_image;
+    if (angle3Title) metafields.angle_3_title = angle3Title;
+    if (angle3Text) metafields.angle_3_text = angle3Text;
+
+    if (lifestyleMainTitle) metafields.lifestyle_main_title = lifestyleMainTitle;
+    if (lifestyleLeftTitle) metafields.lifestyle_left_title = lifestyleLeftTitle;
+    if (uploadedGids.lifestyle_left_icon) metafields.lifestyle_left_icon = uploadedGids.lifestyle_left_icon;
+    if (lifestyleLeftText) metafields.lifestyle_left_text = lifestyleLeftText;
+    if (uploadedGids.lifestyle_image) metafields.lifestyle_image = uploadedGids.lifestyle_image;
+    if (lifestyleRightTitle) metafields.lifestyle_right_title = lifestyleRightTitle;
+    if (uploadedGids.lifestyle_right_icon) metafields.lifestyle_right_icon = uploadedGids.lifestyle_right_icon;
+    if (lifestyleRightText) metafields.lifestyle_right_text = lifestyleRightText;
+
+    if (sizeGuide2) metafields.size_guide2 = sizeGuide2;
+
+    // ========== STEP 3: Create product ==========
+    setLoadingMessage(`${prefix}Creazione prodotto su Shopify...`);
+
+    const productOptions = variantOptions.length > 0
+      ? variantOptions.map(opt => ({ name: opt.name, values: opt.values }))
+      : undefined;
+
+    const parsedTags = tags
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
+    const payload = {
+      shopId: targetShopId,
+      title,
+      description,
+      price: parseFloat(price) || 0,
+      compareAtPrice: parseFloat(compareAtPrice) || null,
+      sku: sku || generateSku(),
+      tags: parsedTags,
+      templateSuffix: 'landing',
+      metafields,
+      options: productOptions,
+    };
+
+    const response = await fetch('/api/create-product', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Errore creazione prodotto');
+    }
+
+    const result = await response.json();
+    const createdProductId = result.product?.shopifyProductId || result.product?.shopifyId;
+
+    if (!createdProductId) {
+      throw new Error('ID prodotto non ricevuto da Shopify');
+    }
+
+    // Collect warnings from product creation
+    const productWarnings: string[] = result.warnings || [];
+    const isComplete = result.complete !== false;
+
+    console.log(`[PRODUCT] Created on ${shopName} with ID:`, createdProductId);
+    if (productWarnings.length > 0) {
+      console.log(`[PRODUCT] Warnings on ${shopName}:`, productWarnings);
+    }
+
+    // ========== STEP 4: Upload gallery images and get mediaIds ==========
+    let imageUrlToMediaId: Record<string, string> = {};
+    const newImages = productImages.filter(img => !img.id && (img.file || img.url));
+
+    if (newImages.length > 0) {
+      setLoadingMessage(`${prefix}Caricamento ${newImages.length} immagini galleria...`);
+
+      const imageFormData = new FormData();
+      imageFormData.append('shopId', targetShopId);
+      imageFormData.append('productId', createdProductId);
+
+      // Track blob URLs in order for mapping
+      const orderedBlobUrls: string[] = [];
+
+      // URLs first (same order as API)
+      newImages.forEach((img) => {
+        if (img.url && !img.url.startsWith('blob:')) {
+          imageFormData.append('imageUrls', img.url);
+          orderedBlobUrls.push(img.url);
+        }
+      });
+
+      // Files second
+      newImages.forEach((img) => {
+        if (img.file && img.url) {
+          imageFormData.append('files', img.file);
+          orderedBlobUrls.push(img.url);
+        }
+      });
+
+      console.log(`[IMAGES] Uploading to ${shopName} with blob URLs:`, orderedBlobUrls);
+
+      const imgResponse = await fetch('/api/product-images', {
+        method: 'POST',
+        body: imageFormData,
+      });
+
+      const imgResult = await imgResponse.json();
+
+      if (!imgResult.success) {
+        console.error(`[IMAGES] Upload to ${shopName} failed:`, imgResult.error);
+      } else {
+        console.log(`[IMAGES] Upload to ${shopName} success, received:`, imgResult.images?.length, 'images');
+
+        // Build blob URL -> mediaId mapping
+        if (imgResult.images) {
+          imgResult.images.forEach((uploadedImg: any, idx: number) => {
+            if (uploadedImg.id) {
+              const blobUrl = orderedBlobUrls[idx];
+              if (blobUrl) {
+                imageUrlToMediaId[blobUrl] = uploadedImg.id;
+                console.log(`[IMAGES] Mapped: ${blobUrl.substring(0, 50)}... -> ${uploadedImg.id}`);
+              }
+            }
+          });
+        }
+      }
+    }
+
+    // ========== STEP 5: Create variants with correct mediaIds ==========
+    if (variantOptions.length > 0 && variantCombinations.length > 0) {
+      setLoadingMessage(`${prefix}Creazione varianti e associazione immagini...`);
+
+      // Get main price as fallback for variants with no price
+      const mainPrice = parseFloat(price) || 0;
+      const mainCompareAt = parseFloat(compareAtPrice) || 0;
+
+      // Map blob URLs to Shopify mediaIds AND ensure prices are set
+      const updatedCombinations = variantCombinations.map(combo => {
+        let mediaId: string | undefined = undefined;
+
+        // Try to find mediaId from imageUrl (blob URL)
+        if (combo.imageUrl && imageUrlToMediaId[combo.imageUrl]) {
+          mediaId = imageUrlToMediaId[combo.imageUrl];
+          console.log(`[VARIANTS] ${JSON.stringify(combo.options)} -> ${mediaId}`);
+        }
+        // Or from imageId if it's a blob URL
+        else if (combo.imageId && imageUrlToMediaId[combo.imageId]) {
+          mediaId = imageUrlToMediaId[combo.imageId];
+          console.log(`[VARIANTS] ${JSON.stringify(combo.options)} -> ${mediaId}`);
+        }
+
+        // Ensure variant has a valid price - use main price if variant price is 0 or empty
+        const variantPrice = parseFloat(String(combo.price)) || 0;
+        const variantCompareAt = parseFloat(String(combo.compareAtPrice)) || 0;
+
+        const finalPrice = variantPrice > 0 ? variantPrice : mainPrice;
+        const finalCompareAt = variantCompareAt > 0 ? variantCompareAt : (mainCompareAt > 0 ? mainCompareAt : undefined);
+
+        console.log(`[VARIANTS] Price for ${JSON.stringify(combo.options)}: variant=${variantPrice}, main=${mainPrice}, final=${finalPrice}`);
+
+        return {
+          ...combo,
+          price: finalPrice.toFixed(2),
+          compareAtPrice: finalCompareAt ? finalCompareAt.toFixed(2) : undefined,
+          imageId: mediaId,
+        };
+      });
+
+      const variantRes = await fetch('/api/variants', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shopId: targetShopId,
+          productId: createdProductId,
+          options: variantOptions,
+          variants: updatedCombinations,
+        }),
+      });
+
+      const variantData = await variantRes.json();
+
+      if (!variantRes.ok || !variantData.success) {
+        throw new Error(variantData.error || 'Errore creazione varianti');
+      }
+
+      console.log(`[VARIANTS] Created on ${shopName} successfully:`, variantData.variants?.length || 0, 'variants');
+    }
+
+    return {
+      success: true,
+      warnings: productWarnings,
+      complete: isComplete && productWarnings.length === 0,
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // ========== STEP 1: Upload metafield images ==========
-      setLoadingMessage('Caricamento immagini metafield...');
+      if (isEditing) {
+        // ========== EDIT MODE: Multiple shops ==========
+        const shopsToUpdate = selectedShops
+          .map(id => shops.find(s => s.id === id))
+          .filter((s): s is Shop => s !== undefined);
 
-      const uploads: { key: string; file: File }[] = [];
-      if (angle1ImageFile) uploads.push({ key: 'angle_1_image', file: angle1ImageFile });
-      if (angle2ImageFile) uploads.push({ key: 'angle_2_image', file: angle2ImageFile });
-      if (angle3ImageFile) uploads.push({ key: 'angle_3_image', file: angle3ImageFile });
-      if (lifestyleLeftIconFile) uploads.push({ key: 'lifestyle_left_icon', file: lifestyleLeftIconFile });
-      if (lifestyleImageFile) uploads.push({ key: 'lifestyle_image', file: lifestyleImageFile });
-      if (lifestyleRightIconFile) uploads.push({ key: 'lifestyle_right_icon', file: lifestyleRightIconFile });
+        if (shopsToUpdate.length === 0) {
+          throw new Error('Seleziona almeno uno shop');
+        }
 
-      const uploadedGids: Record<string, string> = {};
-      for (const upload of uploads) {
-        const gid = await uploadFileForMetafield(upload.file);
-        if (gid) uploadedGids[upload.key] = gid;
-      }
+        if (!productHandle) {
+          throw new Error('Handle prodotto non disponibile');
+        }
 
-      // ========== STEP 2: Build metafields ==========
-      const metafields: Record<string, string> = {};
+        const results: { shop: string; success: boolean; error?: string; warnings?: string[]; complete?: boolean }[] = [];
 
-      if (bullet1) metafields.bullet_1 = bullet1;
-      if (bullet2) metafields.bullet_2 = bullet2;
-      if (bullet3) metafields.bullet_3 = bullet3;
-
-      if (uploadedGids.angle_1_image) metafields.angle_1_image = uploadedGids.angle_1_image;
-      if (angle1Title) metafields.angle_1_title = angle1Title;
-      if (angle1Text) metafields.angle_1_text = angle1Text;
-
-      if (uploadedGids.angle_2_image) metafields.angle_2_image = uploadedGids.angle_2_image;
-      if (angle2Title) metafields.angle_2_title = angle2Title;
-      if (angle2Text) metafields.angle_2_text = angle2Text;
-
-      if (uploadedGids.angle_3_image) metafields.angle_3_image = uploadedGids.angle_3_image;
-      if (angle3Title) metafields.angle_3_title = angle3Title;
-      if (angle3Text) metafields.angle_3_text = angle3Text;
-
-      if (lifestyleMainTitle) metafields.lifestyle_main_title = lifestyleMainTitle;
-      if (lifestyleLeftTitle) metafields.lifestyle_left_title = lifestyleLeftTitle;
-      if (uploadedGids.lifestyle_left_icon) metafields.lifestyle_left_icon = uploadedGids.lifestyle_left_icon;
-      if (lifestyleLeftText) metafields.lifestyle_left_text = lifestyleLeftText;
-      if (uploadedGids.lifestyle_image) metafields.lifestyle_image = uploadedGids.lifestyle_image;
-      if (lifestyleRightTitle) metafields.lifestyle_right_title = lifestyleRightTitle;
-      if (uploadedGids.lifestyle_right_icon) metafields.lifestyle_right_icon = uploadedGids.lifestyle_right_icon;
-      if (lifestyleRightText) metafields.lifestyle_right_text = lifestyleRightText;
-
-      if (sizeGuide2) metafields.size_guide2 = sizeGuide2;
-
-      // ========== STEP 3: Create/Update product ==========
-      setLoadingMessage(isEditing ? 'Aggiornamento prodotto...' : 'Creazione prodotto su Shopify...');
-
-      const productOptions = variantOptions.length > 0
-        ? variantOptions.map(opt => ({ name: opt.name, values: opt.values }))
-        : undefined;
-
-      const endpoint = isEditing ? '/api/update-product' : '/api/create-product';
-      const shopifyProductId = product?.shopifyId || product?.id;
-
-      const parsedTags = tags
-        .split(',')
-        .map(t => t.trim())
-        .filter(t => t.length > 0);
-
-      const payload = isEditing
-        ? {
-            productId: shopifyProductId,
-            shopId,
-            title,
-            description,
-            price: parseFloat(price) || 0,
-            compareAtPrice: parseFloat(compareAtPrice) || null,
-            sku: sku || undefined,
-            tags: parsedTags,
-            metafields,
-          }
-        : {
-            shopId,
-            title,
-            description,
-            price: parseFloat(price) || 0,
-            compareAtPrice: parseFloat(compareAtPrice) || null,
-            sku: sku || generateSku(),
-            tags: parsedTags,
-            templateSuffix: 'landing',
-            metafields,
-            options: productOptions,
-          };
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Errore creazione prodotto');
-      }
-
-      const result = await response.json();
-      const createdProductId = result.product?.shopifyProductId || result.product?.shopifyId || shopifyProductId;
-
-      if (!createdProductId) {
-        throw new Error('ID prodotto non ricevuto da Shopify');
-      }
-
-      console.log('[PRODUCT] Created with ID:', createdProductId);
-
-      // ========== STEP 4: Upload gallery images and get mediaIds ==========
-      let imageUrlToMediaId: Record<string, string> = {};
-      const newImages = productImages.filter(img => !img.id && (img.file || img.url));
-
-      if (newImages.length > 0) {
-        setLoadingMessage(`Caricamento ${newImages.length} immagini galleria...`);
-
-        const imageFormData = new FormData();
-        imageFormData.append('shopId', shopId);
-        imageFormData.append('productId', createdProductId);
-
-        // Track blob URLs in order for mapping
-        const orderedBlobUrls: string[] = [];
-
-        // URLs first (same order as API)
-        newImages.forEach((img) => {
-          if (img.url && !img.url.startsWith('blob:')) {
-            imageFormData.append('imageUrls', img.url);
-            orderedBlobUrls.push(img.url);
-          }
-        });
-
-        // Files second
-        newImages.forEach((img) => {
-          if (img.file) {
-            imageFormData.append('files', img.file);
-            orderedBlobUrls.push(img.url);
-          }
-        });
-
-        console.log('[IMAGES] Uploading with blob URLs:', orderedBlobUrls);
-
-        const imgResponse = await fetch('/api/product-images', {
-          method: 'POST',
-          body: imageFormData,
-        });
-
-        const imgResult = await imgResponse.json();
-
-        if (!imgResult.success) {
-          console.error('[IMAGES] Upload failed:', imgResult.error);
-        } else {
-          console.log('[IMAGES] Upload success, received:', imgResult.images?.length, 'images');
-
-          // Build blob URL -> mediaId mapping
-          if (imgResult.images) {
-            imgResult.images.forEach((uploadedImg: any, idx: number) => {
-              if (uploadedImg.id) {
-                const blobUrl = orderedBlobUrls[idx];
-                if (blobUrl) {
-                  imageUrlToMediaId[blobUrl] = uploadedImg.id;
-                  console.log(`[IMAGES] Mapped: ${blobUrl.substring(0, 50)}... -> ${uploadedImg.id}`);
-                }
-              }
+        for (let i = 0; i < shopsToUpdate.length; i++) {
+          const shop = shopsToUpdate[i];
+          try {
+            const updateResult = await updateProductOnShop(
+              shop.id,
+              shop.name || shop.shop,
+              i,
+              shopsToUpdate.length,
+              productHandle
+            );
+            results.push({
+              shop: shop.name || shop.shop,
+              success: true,
+              warnings: updateResult.warnings,
+              complete: updateResult.complete,
+            });
+          } catch (error: any) {
+            results.push({
+              shop: shop.name || shop.shop,
+              success: false,
+              error: error.message
             });
           }
         }
-      }
 
-      // ========== STEP 5: Create variants with correct mediaIds ==========
-      if (variantOptions.length > 0 && variantCombinations.length > 0) {
-        setLoadingMessage('Creazione varianti e associazione immagini...');
+        // Show results
+        setLoadingMessage('');
+        const successCount = results.filter(r => r.success).length;
+        const failedShops = results.filter(r => !r.success);
+        const shopsWithWarnings = results.filter(r => r.success && r.warnings && r.warnings.length > 0);
 
-        // Map blob URLs to Shopify mediaIds
-        const updatedCombinations = variantCombinations.map(combo => {
-          let mediaId: string | undefined = undefined;
+        let message = '';
 
-          // Try to find mediaId from imageUrl (blob URL)
-          if (combo.imageUrl && imageUrlToMediaId[combo.imageUrl]) {
-            mediaId = imageUrlToMediaId[combo.imageUrl];
-            console.log(`[VARIANTS] ${JSON.stringify(combo.options)} -> ${mediaId}`);
+        if (failedShops.length === 0 && shopsWithWarnings.length === 0) {
+          message = `✅ Prodotto aggiornato con successo su ${successCount} shop!\n\nTutti i dati sono stati salvati correttamente.`;
+        } else {
+          message = `Prodotto aggiornato su ${successCount}/${results.length} shop.`;
+
+          if (failedShops.length > 0) {
+            message += `\n\n❌ ERRORI:`;
+            failedShops.forEach(r => {
+              message += `\n• ${r.shop}: ${r.error}`;
+            });
           }
-          // Or from imageId if it's a blob URL
-          else if (combo.imageId && imageUrlToMediaId[combo.imageId]) {
-            mediaId = imageUrlToMediaId[combo.imageId];
-            console.log(`[VARIANTS] ${JSON.stringify(combo.options)} -> ${mediaId}`);
+
+          if (shopsWithWarnings.length > 0) {
+            message += `\n\n⚠️ AVVISI:`;
+            shopsWithWarnings.forEach(r => {
+              message += `\n\n${r.shop}:`;
+              r.warnings?.forEach(w => {
+                message += `\n  • ${w}`;
+              });
+            });
           }
-
-          return {
-            ...combo,
-            imageId: mediaId,
-          };
-        });
-
-        const variantRes = await fetch('/api/variants', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            shopId,
-            productId: createdProductId,
-            options: variantOptions,
-            variants: updatedCombinations,
-          }),
-        });
-
-        const variantData = await variantRes.json();
-
-        if (!variantRes.ok || !variantData.success) {
-          throw new Error(variantData.error || 'Errore creazione varianti');
         }
 
-        console.log('[VARIANTS] Created successfully:', variantData.variants?.length || 0, 'variants');
-      }
+        alert(message);
 
-      // ========== DONE ==========
-      setLoadingMessage('');
-      alert(product ? 'Prodotto aggiornato!' : 'Prodotto creato con successo!');
-      onSuccess?.();
+        // Clear deleted images tracking
+        setImagesToDelete([]);
+        onSuccess?.();
+
+      } else {
+        // ========== CREATE MODE: Multiple shops ==========
+        const shopsToCreate = selectedShops
+          .map(id => shops.find(s => s.id === id))
+          .filter((s): s is Shop => s !== undefined);
+
+        if (shopsToCreate.length === 0) {
+          throw new Error('Seleziona almeno uno shop');
+        }
+
+        const results: { shop: string; success: boolean; error?: string; warnings?: string[]; complete?: boolean }[] = [];
+
+        for (let i = 0; i < shopsToCreate.length; i++) {
+          const shop = shopsToCreate[i];
+          try {
+            const createResult = await createProductOnShop(shop.id, shop.name || shop.shop, i, shopsToCreate.length);
+            results.push({
+              shop: shop.name || shop.shop,
+              success: true,
+              warnings: createResult.warnings,
+              complete: createResult.complete,
+            });
+          } catch (error: any) {
+            results.push({ shop: shop.name || shop.shop, success: false, error: error.message });
+          }
+        }
+
+        // Show results
+        setLoadingMessage('');
+        const successCount = results.filter(r => r.success).length;
+        const failedShops = results.filter(r => !r.success);
+        const shopsWithWarnings = results.filter(r => r.success && r.warnings && r.warnings.length > 0);
+        const incompleteShops = results.filter(r => r.success && r.complete === false);
+
+        // Build detailed message
+        let message = '';
+
+        if (failedShops.length === 0 && shopsWithWarnings.length === 0) {
+          // All complete with no warnings
+          message = `✅ Prodotto creato con successo su ${successCount} shop!\n\nTutti i dati sono stati inseriti correttamente.`;
+        } else {
+          // Some issues
+          message = `Prodotto creato su ${successCount}/${results.length} shop.`;
+
+          if (failedShops.length > 0) {
+            message += `\n\n❌ ERRORI (prodotto NON creato):`;
+            failedShops.forEach(r => {
+              message += `\n• ${r.shop}: ${r.error}`;
+            });
+          }
+
+          if (shopsWithWarnings.length > 0) {
+            message += `\n\n⚠️ AVVISI (prodotto creato ma con problemi):`;
+            shopsWithWarnings.forEach(r => {
+              message += `\n\n${r.shop}:`;
+              r.warnings?.forEach(w => {
+                message += `\n  • ${w}`;
+              });
+            });
+          }
+
+          if (incompleteShops.length > 0 && shopsWithWarnings.length === 0) {
+            message += `\n\n⚠️ Alcuni shop potrebbero avere dati incompleti.`;
+          }
+        }
+
+        alert(message);
+        onSuccess?.();
+      }
 
     } catch (error: any) {
       console.error('Form submission error:', error);
@@ -671,6 +1131,56 @@ export default function ProductForm({ shopId, product, onSuccess }: ProductFormP
           <p className="text-blue-800 font-medium">
             Stai modificando: {title || 'Prodotto'}
           </p>
+        </div>
+      )}
+
+      {/* Shop Selection - For both create and edit */}
+      {shops.length > 1 && (
+        <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+          <h3 className="text-lg font-bold mb-3 text-indigo-800">
+            {isEditing ? 'Modifica Prodotto Su' : 'Crea Prodotto Su'}
+          </h3>
+          <p className="text-sm text-indigo-600 mb-4">
+            {isEditing
+              ? 'Seleziona gli shop su cui applicare le modifiche'
+              : 'Seleziona gli shop su cui creare il prodotto'}
+          </p>
+          <div className="flex flex-wrap gap-4">
+            {shops.map((shop) => (
+              <label
+                key={shop.id}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer border-2 transition-colors ${
+                  selectedShops.includes(shop.id)
+                    ? 'bg-indigo-100 border-indigo-500 text-indigo-900'
+                    : 'bg-white border-gray-200 hover:border-indigo-300'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedShops.includes(shop.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedShops([...selectedShops, shop.id]);
+                    } else {
+                      // Prevent unchecking if it's the only one selected
+                      if (selectedShops.length > 1) {
+                        setSelectedShops(selectedShops.filter(id => id !== shop.id));
+                      }
+                    }
+                  }}
+                  className="w-4 h-4 text-indigo-600 rounded"
+                />
+                <span className="font-medium">{shop.name || shop.shop}</span>
+              </label>
+            ))}
+          </div>
+          {selectedShops.length > 1 && (
+            <p className="text-sm text-indigo-700 mt-3 font-medium">
+              {isEditing
+                ? `Le modifiche verranno applicate a ${selectedShops.length} shop`
+                : `Il prodotto verrà creato su ${selectedShops.length} shop`}
+            </p>
+          )}
         </div>
       )}
 
@@ -859,6 +1369,11 @@ export default function ProductForm({ shopId, product, onSuccess }: ProductFormP
           onImagesChange={setProductImages}
           shopId={shopId}
           productId={product?.shopifyProductId}
+          onImageDelete={(url) => {
+            if (isEditing) {
+              setImagesToDelete(prev => [...prev, url]);
+            }
+          }}
         />
       </div>
 

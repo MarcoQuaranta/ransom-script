@@ -116,11 +116,19 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Upload file to staged URL
     console.log('[UPLOAD] Step 2: Uploading file to staged URL');
+
+    // Read file data into ArrayBuffer to ensure it's fully loaded
+    // This prevents issues with File objects being "consumed" on first read
+    const fileArrayBuffer = await file.arrayBuffer();
+    const fileBlob = new Blob([fileArrayBuffer], { type: file.type || 'image/jpeg' });
+    console.log('[UPLOAD] File loaded into memory:', fileBlob.size, 'bytes');
+
     const uploadFormData = new FormData();
     stagedTarget.parameters.forEach((param: any) => {
       uploadFormData.append(param.name, param.value);
     });
-    uploadFormData.append('file', file);
+    // Use the blob instead of original file to ensure fresh data
+    uploadFormData.append('file', fileBlob, file.name);
 
     const uploadResponse = await fetch(stagedTarget.url, {
       method: 'POST',
