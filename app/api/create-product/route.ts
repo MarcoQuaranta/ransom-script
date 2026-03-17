@@ -267,7 +267,7 @@ export async function POST(request: NextRequest) {
         })
         .map(([key, value]) => ({
           ownerId: productGid,
-          namespace: 'custom',
+          namespace: 'landing',
           key,
           value: typeof value === 'string' ? value : JSON.stringify(value),
           // NON includere type - Shopify lo inferisce dalla definizione
