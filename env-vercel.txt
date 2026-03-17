@@ -1,0 +1,12 @@
+# Environment Variables per Vercel
+# Copia questi valori nelle Settings > Environment Variables di Vercel
+
+DATABASE_URL=postgresql://neondb_owner:npg_8z7PiYGjQKuV@ep-super-term-a40lrqnh-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+SHOPIFY_API_KEY=1cbb2c31f105711fa34f1ce74f3432dc
+SHOPIFY_API_SECRET=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
+
+NEXTAUTH_URL=https://ransom-script.vercel.app
+NEXTAUTH_SECRET=GENERA_UN_VALORE_SICURO
+
+GEMINI_API_KEY=AIzaSyDVnJWmQ87beLlZCwPfDN-qeCV-SnVLKtQ
